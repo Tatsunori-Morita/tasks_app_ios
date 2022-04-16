@@ -13,7 +13,7 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var textView: UITextView!
 
     public static let identifier = String(describing: TaskTableViewCell.self)
-    public var textEditingDidEnd: ((_ text: String) -> Void)?
+    public var textEditingDidEnd: ((_ text: String, _ isChecked: Bool) -> Void)?
     public var lineHeightChanged: (() -> Void)?
     public var tappedCheckMark: ((TaskTableViewCellViewModel) -> Void)?
 
@@ -78,6 +78,7 @@ extension TaskTableViewCell: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        textEditingDidEnd?(textView.text)
+        guard let vm = taskTableViewCellViewModel else { return }
+        textEditingDidEnd?(textView.text, vm.isChecked)
     }
 }

@@ -51,14 +51,15 @@ class HomeViewController: UIViewController {
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(onNext: { [self] indexPath in
-            homeViewModel.updateItems(
-                viewModel: TaskTableViewCellViewModel(text: "", isChecked: false),
+            let task = Task(text: "", isChecked: false)
+            homeViewModel.updateTasks(
+                viewModel: TaskTableViewCellViewModel(task: task, isNewTask: true),
                 index: indexPath)
         }).disposed(by: disposeBag)
 
         // Add new cell.
         addButton.rx.tap.asDriver().drive(onNext: { [self] _ in
-            homeViewModel.addNewItem()
+            homeViewModel.addNewTask()
         }).disposed(by: disposeBag)
     }
 }
@@ -74,14 +75,16 @@ extension HomeViewController {
                 tableView.endUpdates()
             }
 
-            cell.textEditingDidEnd = { text in
-                let newViewModel = TaskTableViewCellViewModel(text: text, isChecked: viewModel.isChecked)
-                self.homeViewModel.updateItems(viewModel: newViewModel, index: indexPath)
+            cell.textEditingDidEnd = { text, isChecked in
+                let task = Task(text: text, isChecked: isChecked)
+                let newViewModel = TaskTableViewCellViewModel(task: task)
+                self.homeViewModel.updateTasks(viewModel: newViewModel, index: indexPath)
             }
 
             cell.tappedCheckMark = { viewModel in
-                let newViewModel = TaskTableViewCellViewModel(text: viewModel.text, isChecked: !viewModel.isChecked)
-                self.homeViewModel.updateItems(viewModel: newViewModel, index: indexPath)
+                let task = Task(text: viewModel.text, isChecked: !viewModel.isChecked)
+                let newViewModel = TaskTableViewCellViewModel(task: task)
+                self.homeViewModel.updateTasks(viewModel: newViewModel, index: indexPath)
             }
             return cell
         }, titleForHeaderInSection: { dataSource, index in

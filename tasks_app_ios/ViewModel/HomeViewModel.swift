@@ -10,7 +10,7 @@ import RxCocoa
 import RxDataSources
 
 struct HomeViewModel {
-    private var _tasks = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
+    private let _tasks = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let userDefaultsName = "Tasks"
 
     public var tasks: BehaviorRelay<[TaskTableViewSectionViewModel]> {
@@ -21,13 +21,13 @@ struct HomeViewModel {
         _tasks.accept(loadTasks)
     }
 
-    public func addNewItem() {
+    public func addNewTask() {
         var section = _tasks.value.last!
-        section.items.append(TaskTableViewCellViewModel(text: "", isChecked: false, isNewTask: true))
+        section.items.append(TaskTableViewCellViewModel(task: Task(text: "", isChecked: false), isNewTask: true))
         _tasks.accept([section])
     }
 
-    public func updateItems(viewModel: TaskTableViewCellViewModel, index: IndexPath) {
+    public func updateTasks(viewModel: TaskTableViewCellViewModel, index: IndexPath) {
         var section = _tasks.value.last!
         section.items[index.row] = viewModel
         section.items = section.items.filter { !$0.text.isEmpty }
@@ -36,21 +36,31 @@ struct HomeViewModel {
         } else {
             _tasks.accept([section])
         }
-        saveAll(tasks: _tasks.value)
+        saveAll(sectionViewModels: _tasks.value)
     }
 
-    private func saveAll(tasks: [TaskTableViewSectionViewModel]) {
-         let encoder = JSONEncoder()
-         if let encoded = try? encoder.encode(tasks){
+    private func saveAll(sectionViewModels: [TaskTableViewSectionViewModel]) {
+        var taskModels: [Task] = []
+        for sectionViewModel in sectionViewModels {
+            for cellViewModel in sectionViewModel.items {
+                taskModels.append(cellViewModel.task)
+            }
+        }
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(taskModels){
             UserDefaults.standard.set(encoded, forKey: userDefaultsName)
-         }
+        }
     }
 
     private var loadTasks: [TaskTableViewSectionViewModel] {
         guard
             let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
-            let tasks = try? JSONDecoder().decode(Array.self, from: objects) as [TaskTableViewSectionViewModel]
+            let taskModels = try? JSONDecoder().decode(Array.self, from: objects) as [Task]
         else { return [TaskTableViewSectionViewModel(header: "", items: [])] }
-        return tasks
+        var cellViewModels: [TaskTableViewCellViewModel] = []
+        taskModels.forEach { taskModel in
+            cellViewModels.append(TaskTableViewCellViewModel(task: taskModel))
+        }
+        return [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
     }
 }
