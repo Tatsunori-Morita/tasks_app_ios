@@ -17,6 +17,7 @@ class HomeViewController: UIViewController {
     private static let identifier = String(describing: HomeViewController.self)
     private let disposeBag = DisposeBag()
     private let homeViewModel = HomeViewModel()
+    private var tableViewContentOffset: CGPoint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,14 +41,12 @@ class HomeViewController: UIViewController {
         homeViewModel.tasks.bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
-        NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-            .map { _ in true }
-            .subscribe(addButton.rx.isHidden)
-            .disposed(by: disposeBag)
-        NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
-            .map { _ in false }
-            .subscribe(addButton.rx.isHidden)
-            .disposed(by: disposeBag)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillShow(notification:)),
+            name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillHide(notification:)),
+            name: UIResponder.keyboardWillHideNotification, object: nil)
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(onNext: { [self] indexPath in
@@ -62,6 +61,26 @@ class HomeViewController: UIViewController {
             homeViewModel.addNewTask()
         }).disposed(by: disposeBag)
     }
+}
+
+extension HomeViewController {
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        addButton.isHidden = true
+        tableViewContentOffset = tableView.contentOffset
+        if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
+            tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+        }
+     }
+
+     @objc private func keyboardWillHide(notification: NSNotification) {
+         addButton.isHidden = false
+         UIView.animate(withDuration: 0.2, animations: { [self] in
+             if let unwrappedOffset = tableViewContentOffset {
+                 tableView.contentOffset = unwrappedOffset
+             }
+             tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+         })
+     }
 }
 
 extension HomeViewController {
