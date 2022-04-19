@@ -21,21 +21,28 @@ struct HomeViewModel {
         _tasks.accept(loadTasks)
     }
 
+    public func getTask(index: Int) -> TaskTableViewCellViewModel {
+        let section = _tasks.value.last!
+        return section.items[index]
+    }
+
     public func addNewTask() {
         var section = _tasks.value.last!
         section.items.append(TaskTableViewCellViewModel(task: Task(text: "", isChecked: false), isNewTask: true))
         _tasks.accept([section])
     }
 
-    public func updateTasks(viewModel: TaskTableViewCellViewModel, index: IndexPath) {
-        var section = _tasks.value.last!
-        section.items[index.row] = viewModel
-        section.items = section.items.filter { !$0.text.isEmpty }
-        if viewModel.text.isEmpty {
-            _tasks.accept([TaskTableViewSectionViewModel(header: "", items: section.items)])
+    public func updateTasks(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+        guard var section = _tasks.value.last else { return }
+        if let index = section.items.firstIndex(where: { $0.getId == beforeId }) {
+            // Update or delete task.
+            section.items[index] = viewModel
         } else {
-            _tasks.accept([section])
+            // Add new task.
+            section.items.append(viewModel)
         }
+        section.items = section.items.filter { !$0.text.isEmpty }
+        _tasks.accept([section])
         saveAll(sectionViewModels: _tasks.value)
     }
 

@@ -17,6 +17,10 @@ class TaskTableViewCellViewModel {
         _isNewTask = isNewTask
     }
 
+    public var getId: String {
+        _id
+    }
+
     public var task: Task {
         _task
     }
