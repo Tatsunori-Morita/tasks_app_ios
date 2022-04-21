@@ -37,11 +37,8 @@
                         </constraints>
                     </view>
                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbz-4l-I7j">
-                        <rect key="frame" x="70" y="0.0" width="334" height="86"/>
+                        <rect key="frame" x="70" y="3" width="334" height="83"/>
                         <color key="backgroundColor" name="background"/>
-                        <constraints>
-                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="48" id="g1l-JP-9ak"/>
-                        </constraints>
                         <color key="textColor" name="text"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -50,10 +47,8 @@
                 <color key="backgroundColor" name="background"/>
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="Lbz-4l-I7j" secondAttribute="bottom" id="2If-69-hPG"/>
-                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="leading" secondItem="OcT-2c-cZw" secondAttribute="trailing" id="3NF-wO-60F"/>
                     <constraint firstItem="OcT-2c-cZw" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Lz4-0M-9wX"/>
-                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="leading" secondItem="OcT-2c-cZw" secondAttribute="trailing" id="PBB-UG-Peg"/>
-                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Qup-a9-GES"/>
+                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="3" id="Qup-a9-GES"/>
                     <constraint firstItem="OcT-2c-cZw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="WK6-be-emy"/>
                     <constraint firstItem="Lbz-4l-I7j" firstAttribute="leading" secondItem="OcT-2c-cZw" secondAttribute="trailing" id="bYw-W8-acF"/>
                     <constraint firstAttribute="trailing" secondItem="Lbz-4l-I7j" secondAttribute="trailing" constant="24" id="gib-NB-N2H"/>

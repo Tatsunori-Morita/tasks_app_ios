@@ -33,7 +33,6 @@ class HomeViewController: UIViewController {
     private func initialize() {
         addButton.setTitle("", for: .normal)
         tableView.separatorStyle = .none
-        tableView.estimatedRowHeight = 48
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(
             UINib(nibName: TaskTableViewCell.identifier, bundle: nil),
