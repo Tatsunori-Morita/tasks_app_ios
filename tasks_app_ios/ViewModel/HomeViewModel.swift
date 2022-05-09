@@ -17,6 +17,11 @@ struct HomeViewModel {
         _tasks
     }
 
+    public var taskTableViewCellViewModellArray: [TaskTableViewCellViewModel] {
+        let section = tasks.value.last!
+        return section.items
+    }
+
     init() {
         _tasks.accept(loadTasks)
     }

@@ -59,6 +59,11 @@ class HomeViewController: UIViewController {
         // Add new cell.
         addButton.rx.tap.asDriver().drive(onNext: { [self] _ in
             homeViewModel.addNewTask()
+            let indexPath = IndexPath(row: homeViewModel.taskTableViewCellViewModellArray.count - 1, section: 0)
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            if let cell = tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+                cell.textView.becomeFirstResponder()
+            }
         }).disposed(by: disposeBag)
     }
 }

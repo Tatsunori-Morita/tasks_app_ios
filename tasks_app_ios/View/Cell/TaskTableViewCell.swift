@@ -50,12 +50,6 @@ class TaskTableViewCell: UITableViewCell {
             iconView.backgroundColor = UIColor.init(named: "checked")
             iconView.layer.borderWidth = 0
         }
-
-        DispatchQueue.main.async {
-            if viewModel.isNewTask {
-                self.textView.becomeFirstResponder()
-            }
-        }
     }
 
     @objc private func tapCheckMark(_ sender: UITapGestureRecognizer) {
