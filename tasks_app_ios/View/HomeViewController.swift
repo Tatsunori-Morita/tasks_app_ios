@@ -37,9 +37,12 @@ class HomeViewController: UIViewController {
         tableView.register(
             UINib(nibName: TaskTableViewCell.identifier, bundle: nil),
             forCellReuseIdentifier: TaskTableViewCell.identifier)
-        homeViewModel.tasks.bind(to: tableView.rx.items(dataSource: dataSource()))
+
+        // Set tableView.
+        homeViewModel.taskTableViewSectionViewModelBehaviorRelay.bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
+        // Set keyboard notification.
         NotificationCenter.default.addObserver(
             self, selector: #selector(keyboardWillShow(notification:)),
             name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -48,20 +51,20 @@ class HomeViewController: UIViewController {
             name: UIResponder.keyboardWillHideNotification, object: nil)
 
         // Delete cell.
-        tableView.rx.itemDeleted.asDriver().drive(onNext: { [self] indexPath in
+        tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
             let task = Task(text: "", isChecked: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
-            let oldViewModel = homeViewModel.getTask(index: indexPath.row)
-            homeViewModel.updateTasks(
+            let oldViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
+            owner.homeViewModel.updateTasks(
                 viewModel: newViewModel, beforeId: oldViewModel.getId)
         }).disposed(by: disposeBag)
 
         // Add new cell.
-        addButton.rx.tap.asDriver().drive(onNext: { [self] _ in
-            homeViewModel.addNewTask()
-            let indexPath = IndexPath(row: homeViewModel.taskTableViewCellViewModellArray.count - 1, section: 0)
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-            if let cell = tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+        addButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            owner.homeViewModel.addNewTask()
+            let indexPath = IndexPath(row: owner.homeViewModel.taskTableViewCellViewModellArray.count - 1, section: 0)
+            owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
                 cell.textView.becomeFirstResponder()
             }
         }).disposed(by: disposeBag)
