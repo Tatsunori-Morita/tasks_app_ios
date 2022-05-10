@@ -81,13 +81,16 @@ extension HomeViewController {
      }
 
      @objc private func keyboardWillHide(notification: NSNotification) {
-         addButton.isHidden = false
-         UIView.animate(withDuration: 0.2, animations: { [self] in
-             if let unwrappedOffset = tableViewContentOffset {
-                 tableView.contentOffset = unwrappedOffset
-             }
-             tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-         })
+         DispatchQueue.main.async { [weak self] in
+             guard let self = self else { return }
+             self.addButton.isHidden = false
+             UIView.animate(withDuration: 0.2, animations: {
+                 if let unwrappedOffset = self.tableViewContentOffset {
+                     self.tableView.contentOffset = unwrappedOffset
+                 }
+                 self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+             })
+         }
      }
 }
 
