@@ -10,35 +10,35 @@ import RxCocoa
 import RxDataSources
 
 struct HomeViewModel {
-    private let _tasks = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
+    private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let userDefaultsName = "Tasks"
 
-    public var tasks: BehaviorRelay<[TaskTableViewSectionViewModel]> {
-        _tasks
+    public var taskTableViewSectionViewModelBehaviorRelay: BehaviorRelay<[TaskTableViewSectionViewModel]> {
+        _taskTableViewSectionViewModels
     }
 
     public var taskTableViewCellViewModellArray: [TaskTableViewCellViewModel] {
-        let section = tasks.value.last!
+        let section = taskTableViewSectionViewModelBehaviorRelay.value.last!
         return section.items
     }
 
     init() {
-        _tasks.accept(loadTasks)
+        _taskTableViewSectionViewModels.accept(loadTasks)
     }
 
-    public func getTask(index: Int) -> TaskTableViewCellViewModel {
-        let section = _tasks.value.last!
+    public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
+        let section = _taskTableViewSectionViewModels.value.last!
         return section.items[index]
     }
 
     public func addNewTask() {
-        var section = _tasks.value.last!
+        guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(task: Task(text: "", isChecked: false), isNewTask: true))
-        _tasks.accept([section])
+        _taskTableViewSectionViewModels.accept([section])
     }
 
     public func updateTasks(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        guard var section = _tasks.value.last else { return }
+        guard var section = _taskTableViewSectionViewModels.value.last else { return }
         if let index = section.items.firstIndex(where: { $0.getId == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
@@ -47,8 +47,8 @@ struct HomeViewModel {
             section.items.append(viewModel)
         }
         section.items = section.items.filter { !$0.text.isEmpty }
-        _tasks.accept([section])
-        saveAll(sectionViewModels: _tasks.value)
+        _taskTableViewSectionViewModels.accept([section])
+        saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
     }
 
     private func saveAll(sectionViewModels: [TaskTableViewSectionViewModel]) {
