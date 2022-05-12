@@ -39,6 +39,7 @@ class TaskTableViewCell: UITableViewCell {
         iconView.layer.borderWidth = 1
         iconView.layer.cornerRadius = iconView.frame.width / 2
         iconView.backgroundColor = UIColor.init(named: "background")
+        textView.isEditable = true
     }
 
     public func configure(viewModel: TaskTableViewCellViewModel) {
@@ -49,6 +50,16 @@ class TaskTableViewCell: UITableViewCell {
         if viewModel.isChecked {
             iconView.backgroundColor = UIColor.init(named: "checked")
             iconView.layer.borderWidth = 0
+            textView.isEditable = false
+
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 16),
+                .foregroundColor: UIColor.init(named: "checkedText")!,
+            ]
+
+            let attr =  NSMutableAttributedString(string: textView.text!, attributes: attributes)
+            attr.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSMakeRange(0, attr.length))
+            textView.attributedText = attr
         }
     }
 
