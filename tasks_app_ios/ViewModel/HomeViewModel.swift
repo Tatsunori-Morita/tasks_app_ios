@@ -11,7 +11,7 @@ import RxDataSources
 
 struct HomeViewModel {
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
-    private let userDefaultsName = "Tasks"
+    private let _dataStore = DataStore.shared
 
     public var taskTableViewSectionViewModelBehaviorRelay: BehaviorRelay<[TaskTableViewSectionViewModel]> {
         _taskTableViewSectionViewModels
@@ -23,7 +23,7 @@ struct HomeViewModel {
     }
 
     init() {
-        _taskTableViewSectionViewModels.accept(loadTasks)
+        _taskTableViewSectionViewModels.accept(_dataStore.loadTasks)
     }
 
     public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
@@ -48,31 +48,6 @@ struct HomeViewModel {
         }
         section.items = section.items.filter { !$0.text.isEmpty }
         _taskTableViewSectionViewModels.accept([section])
-        saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
-    }
-
-    private func saveAll(sectionViewModels: [TaskTableViewSectionViewModel]) {
-        var taskModels: [Task] = []
-        for sectionViewModel in sectionViewModels {
-            for cellViewModel in sectionViewModel.items {
-                taskModels.append(cellViewModel.task)
-            }
-        }
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(taskModels){
-            UserDefaults.standard.set(encoded, forKey: userDefaultsName)
-        }
-    }
-
-    private var loadTasks: [TaskTableViewSectionViewModel] {
-        guard
-            let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
-            let taskModels = try? JSONDecoder().decode(Array.self, from: objects) as [Task]
-        else { return [TaskTableViewSectionViewModel(header: "", items: [])] }
-        var cellViewModels: [TaskTableViewCellViewModel] = []
-        taskModels.forEach { taskModel in
-            cellViewModels.append(TaskTableViewCellViewModel(task: taskModel))
-        }
-        return [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
+        _dataStore.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
     }
 }
