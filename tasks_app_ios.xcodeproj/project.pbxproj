@@ -20,6 +20,7 @@
 		0E13FACE27FF17B900C08753 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E13FACD27FF17B900C08753 /* HomeViewModel.swift */; };
 		0E475852280118210003F3C2 /* Color.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E475851280118210003F3C2 /* Color.xcassets */; };
 		0E6608D3280ABC150012E28E /* TaskTableViewSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */; };
+		0E9A4739282F5B2B00AD5536 /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9A4738282F5B2B00AD5536 /* DataStore.swift */; };
 		0EBA01A72808594F0007F22A /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBA01A62808594F0007F22A /* Task.swift */; };
 		681FCA406DE86B89473DABCD /* Pods_tasks_app_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07251E1E3D4C662DE9D9C024 /* Pods_tasks_app_ios.framework */; };
 /* End PBXBuildFile section */
@@ -41,6 +42,7 @@
 		0E13FACD27FF17B900C08753 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		0E475851280118210003F3C2 /* Color.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Color.xcassets; sourceTree = "<group>"; };
 		0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTableViewSectionViewModel.swift; sourceTree = "<group>"; };
+		0E9A4738282F5B2B00AD5536 /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
 		0EBA01A62808594F0007F22A /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		E93C22030047A4884D32C5DC /* Pods-tasks_app_ios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tasks_app_ios.debug.xcconfig"; path = "Target Support Files/Pods-tasks_app_ios/Pods-tasks_app_ios.debug.xcconfig"; sourceTree = "<group>"; };
 		E9552D06DB291C38488CEF4F /* Pods-tasks_app_ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-tasks_app_ios.release.xcconfig"; path = "Target Support Files/Pods-tasks_app_ios/Pods-tasks_app_ios.release.xcconfig"; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 		0E13FAAF27FF0B9100C08753 /* tasks_app_ios */ = {
 			isa = PBXGroup;
 			children = (
+				0E9A4737282F5B1300AD5536 /* Data */,
 				0E13FACF27FF17EF00C08753 /* View */,
 				0E13FACC27FF17A500C08753 /* ViewModel */,
 				0EBA01A5280859340007F22A /* Model */,
@@ -128,6 +131,14 @@
 				0E13FAC827FF154200C08753 /* UIColor.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		0E9A4737282F5B1300AD5536 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				0E9A4738282F5B2B00AD5536 /* DataStore.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		0EBA01A5280859340007F22A /* Model */ = {
@@ -273,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EBA01A72808594F0007F22A /* Task.swift in Sources */,
+				0E9A4739282F5B2B00AD5536 /* DataStore.swift in Sources */,
 				0E13FACE27FF17B900C08753 /* HomeViewModel.swift in Sources */,
 				0E13FAC627FF12FD00C08753 /* TaskTableViewCell.swift in Sources */,
 				0E13FAB527FF0B9100C08753 /* HomeViewController.swift in Sources */,
