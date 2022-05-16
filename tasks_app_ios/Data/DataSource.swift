@@ -7,8 +7,8 @@
 
 import Foundation
 
-class DataStore {
-    public static let shared = DataStore()
+class DataSource {
+    public static let shared = DataSource()
 
     private let userDefaultsName = "Tasks"
     

@@ -42,7 +42,8 @@ class HomeViewController: UIViewController {
             forCellReuseIdentifier: TaskTableViewCell.identifier)
 
         // Set tableView.
-        homeViewModel.taskTableViewSectionViewModelBehaviorRelay.bind(to: tableView.rx.items(dataSource: dataSource()))
+        homeViewModel.taskTableViewSectionViewModelBehaviorRelay
+            .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
         // Set keyboard notification.
@@ -63,7 +64,7 @@ class HomeViewController: UIViewController {
         }).disposed(by: disposeBag)
 
         // Move cell.
-        tableView.rx.itemMoved.subscribe(with: self, onNext: { owner, values in
+        tableView.rx.itemMoved.asDriver().drive(with: self, onNext: { owner, values in
             let (fromIndexPath, toIndexPath) = values
             guard fromIndexPath != toIndexPath else { return }
             let fromIndexPathViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: fromIndexPath.row)
@@ -75,7 +76,7 @@ class HomeViewController: UIViewController {
         // Add new cell.
         addButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             owner.homeViewModel.addNewTask()
-            let indexPath = IndexPath(row: owner.homeViewModel.taskTableViewCellViewModellArray.count - 1, section: 0)
+            let indexPath = IndexPath(row: owner.homeViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
             owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
                 cell.textView.becomeFirstResponder()
@@ -118,13 +119,15 @@ extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
                 tableView.endUpdates()
             }
 
-            cell.textEditingDidEnd = { newText, viewModel in
+            cell.textEditingDidEnd = { [weak self] newText, viewModel in
+                guard let self = self else { return }
                 let task = Task(text: newText, isChecked: viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.homeViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
-            cell.tappedCheckMark = { viewModel in
+            cell.tappedCheckMark = { [weak self] viewModel in
+                guard let self = self else { return }
                 let task = Task(text: viewModel.text, isChecked: !viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.homeViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
@@ -141,7 +144,7 @@ extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
-        dragItem.localObject = homeViewModel.taskTableViewCellViewModellArray[indexPath.row]
+        dragItem.localObject = homeViewModel.taskTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
     }
 
