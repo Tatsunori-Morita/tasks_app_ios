@@ -11,19 +11,19 @@ import RxDataSources
 
 struct HomeViewModel {
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
-    private let _dataStore = DataStore.shared
+    private let _dataSource = DataSource.shared
 
-    public var taskTableViewSectionViewModelBehaviorRelay: BehaviorRelay<[TaskTableViewSectionViewModel]> {
-        _taskTableViewSectionViewModels
+    public var taskTableViewSectionViewModelBehaviorRelay: Observable<[TaskTableViewSectionViewModel]> {
+        _taskTableViewSectionViewModels.asObservable()
     }
 
-    public var taskTableViewCellViewModellArray: [TaskTableViewCellViewModel] {
-        let section = taskTableViewSectionViewModelBehaviorRelay.value.last!
+    public var taskTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
+        guard let section = _taskTableViewSectionViewModels.value.last else { return [] }
         return section.items
     }
 
     init() {
-        _taskTableViewSectionViewModels.accept(_dataStore.loadTasks)
+        _taskTableViewSectionViewModels.accept(_dataSource.loadTasks)
     }
 
     public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
@@ -48,17 +48,20 @@ struct HomeViewModel {
             // Add new task.
             section.items.append(viewModel)
         }
-        section.items = section.items.filter { !$0.text.isEmpty }
-        _taskTableViewSectionViewModels.accept([section])
-        _dataStore.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
+        save(taskTableViewSectionViewModel: section)
     }
 
     public func updateTasks(viewModel: TaskTableViewCellViewModel, fromIndex: Int, toIndex: Int) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.remove(at: fromIndex)
         section.items.insert(viewModel, at: toIndex)
+        save(taskTableViewSectionViewModel: section)
+    }
+
+    private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
+        var section = taskTableViewSectionViewModel
         section.items = section.items.filter { !$0.text.isEmpty }
         _taskTableViewSectionViewModels.accept([section])
-        _dataStore.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
+        _dataSource.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
     }
 }
