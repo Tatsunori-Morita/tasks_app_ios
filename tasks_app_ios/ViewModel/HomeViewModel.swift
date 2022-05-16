@@ -33,7 +33,9 @@ struct HomeViewModel {
 
     public func addNewTask() {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        section.items.append(TaskTableViewCellViewModel(task: Task(text: "", isChecked: false), isNewTask: true))
+        section.items.append(TaskTableViewCellViewModel(
+            task: Task(text: "", isChecked: false),
+            isNewTask: true))
         _taskTableViewSectionViewModels.accept([section])
     }
 
@@ -46,6 +48,15 @@ struct HomeViewModel {
             // Add new task.
             section.items.append(viewModel)
         }
+        section.items = section.items.filter { !$0.text.isEmpty }
+        _taskTableViewSectionViewModels.accept([section])
+        _dataStore.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
+    }
+
+    public func updateTasks(viewModel: TaskTableViewCellViewModel, fromIndex: Int, toIndex: Int) {
+        guard var section = _taskTableViewSectionViewModels.value.last else { return }
+        section.items.remove(at: fromIndex)
+        section.items.insert(viewModel, at: toIndex)
         section.items = section.items.filter { !$0.text.isEmpty }
         _taskTableViewSectionViewModels.accept([section])
         _dataStore.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)

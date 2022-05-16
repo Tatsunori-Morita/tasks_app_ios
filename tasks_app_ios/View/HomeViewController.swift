@@ -34,6 +34,9 @@ class HomeViewController: UIViewController {
         addButton.setTitle("", for: .normal)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.dragDelegate = self
+        tableView.dropDelegate = self
+        tableView.dragInteractionEnabled = true
         tableView.register(
             UINib(nibName: TaskTableViewCell.identifier, bundle: nil),
             forCellReuseIdentifier: TaskTableViewCell.identifier)
@@ -57,6 +60,16 @@ class HomeViewController: UIViewController {
             let oldViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
             owner.homeViewModel.updateTasks(
                 viewModel: newViewModel, beforeId: oldViewModel.getId)
+        }).disposed(by: disposeBag)
+
+        // Move cell.
+        tableView.rx.itemMoved.subscribe(with: self, onNext: { owner, values in
+            let (fromIndexPath, toIndexPath) = values
+            guard fromIndexPath != toIndexPath else { return }
+            let fromIndexPathViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: fromIndexPath.row)
+            owner.homeViewModel.updateTasks(
+                viewModel: fromIndexPathViewModel,
+                fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
         }).disposed(by: disposeBag)
 
         // Add new cell.
@@ -94,7 +107,7 @@ extension HomeViewController {
      }
 }
 
-extension HomeViewController {
+extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
         return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { dataSource, tableView, indexPath, viewModel in
             let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
@@ -125,4 +138,12 @@ extension HomeViewController {
             return true
         })
     }
+
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let dragItem = UIDragItem(itemProvider: NSItemProvider())
+        dragItem.localObject = homeViewModel.taskTableViewCellViewModellArray[indexPath.row]
+        return [dragItem]
+    }
+
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {}
 }
