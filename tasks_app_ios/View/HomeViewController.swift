@@ -46,14 +46,6 @@ class HomeViewController: UIViewController {
             .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
-        // Set keyboard notification.
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(keyboardWillShow(notification:)),
-            name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(
-            self, selector: #selector(keyboardWillHide(notification:)),
-            name: UIResponder.keyboardWillHideNotification, object: nil)
-
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
             let task = Task(text: "", isChecked: false)
