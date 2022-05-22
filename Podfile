@@ -10,5 +10,6 @@ target 'tasks_app_ios' do
   pod 'RxCocoa'
   pod 'RxDataSources', '~> 5.0'
   pod 'IQKeyboardManagerSwift'
+  pod 'R.swift'
 
 end
