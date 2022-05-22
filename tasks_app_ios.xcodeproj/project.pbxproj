@@ -18,6 +18,7 @@
 		0E13FAC927FF154200C08753 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E13FAC827FF154200C08753 /* UIColor.swift */; };
 		0E13FACB27FF158F00C08753 /* TaskTableViewCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E13FACA27FF158F00C08753 /* TaskTableViewCellViewModel.swift */; };
 		0E13FACE27FF17B900C08753 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E13FACD27FF17B900C08753 /* HomeViewModel.swift */; };
+		0E29962D283A0FE400299574 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29962C283A0FE400299574 /* R.generated.swift */; };
 		0E475852280118210003F3C2 /* Color.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E475851280118210003F3C2 /* Color.xcassets */; };
 		0E6608D3280ABC150012E28E /* TaskTableViewSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */; };
 		0E9A4739282F5B2B00AD5536 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9A4738282F5B2B00AD5536 /* DataSource.swift */; };
@@ -40,6 +41,7 @@
 		0E13FAC827FF154200C08753 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		0E13FACA27FF158F00C08753 /* TaskTableViewCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTableViewCellViewModel.swift; sourceTree = "<group>"; };
 		0E13FACD27FF17B900C08753 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		0E29962C283A0FE400299574 /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
 		0E475851280118210003F3C2 /* Color.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Color.xcassets; sourceTree = "<group>"; };
 		0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTableViewSectionViewModel.swift; sourceTree = "<group>"; };
 		0E9A4738282F5B2B00AD5536 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 		0E13FAA427FF0B9100C08753 = {
 			isa = PBXGroup;
 			children = (
+				0E29962C283A0FE400299574 /* R.generated.swift */,
 				0E13FAAF27FF0B9100C08753 /* tasks_app_ios */,
 				0E13FAAE27FF0B9100C08753 /* Products */,
 				1D7C93C918CA12E15B32A7E1 /* Pods */,
@@ -174,6 +177,7 @@
 			buildConfigurationList = 0E13FAC127FF0B9400C08753 /* Build configuration list for PBXNativeTarget "tasks_app_ios" */;
 			buildPhases = (
 				027B81EDA2CB78D781CF2184 /* [CP] Check Pods Manifest.lock */,
+				0E29962B283A0D9A00299574 /* ShellScript */,
 				0E13FAA927FF0B9100C08753 /* Sources */,
 				0E13FAAA27FF0B9100C08753 /* Frameworks */,
 				0E13FAAB27FF0B9100C08753 /* Resources */,
@@ -259,6 +263,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		0E29962B283A0D9A00299574 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				$SRCROOT/R.generated.swift,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/R.generated.swift\"\n";
+		};
 		8C03214896FA467E199B667F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -292,6 +315,7 @@
 				0E13FACB27FF158F00C08753 /* TaskTableViewCellViewModel.swift in Sources */,
 				0E13FAB127FF0B9100C08753 /* AppDelegate.swift in Sources */,
 				0E13FAB327FF0B9100C08753 /* SceneDelegate.swift in Sources */,
+				0E29962D283A0FE400299574 /* R.generated.swift in Sources */,
 				0E13FAC927FF154200C08753 /* UIColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

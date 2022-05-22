@@ -21,12 +21,12 @@ class TaskTableViewCell: UITableViewCell {
 
     private let normalTextAttributes: [NSAttributedString.Key: Any] = [
         .font: UIFont.systemFont(ofSize: 16),
-        .foregroundColor: UIColor.init(named: "text")!,
+        .foregroundColor: R.color.text()!
     ]
 
     let checkedTextAttributes: [NSAttributedString.Key: Any] = [
         .font: UIFont.systemFont(ofSize: 16),
-        .foregroundColor: UIColor.init(named: "checkedText")!,
+        .foregroundColor: R.color.checkedText()!
     ]
 
     override func awakeFromNib() {
@@ -45,10 +45,10 @@ class TaskTableViewCell: UITableViewCell {
     }
 
     private func initializeLayout() {
-        iconView.layer.borderColor = UIColor.init(named: "checkIconBorder")?.cgColor
+        iconView.layer.borderColor = R.color.checkIconBorder()?.cgColor
         iconView.layer.borderWidth = 1
         iconView.layer.cornerRadius = iconView.frame.width / 2
-        iconView.backgroundColor = UIColor.init(named: "background")
+        iconView.backgroundColor = R.color.background()
         textView.isEditable = true
         textView.attributedText = NSMutableAttributedString(string: textView.text!, attributes: normalTextAttributes)
     }
@@ -59,7 +59,7 @@ class TaskTableViewCell: UITableViewCell {
         textView.text = viewModel.text
 
         if viewModel.isChecked {
-            iconView.backgroundColor = UIColor.init(named: "checked")
+            iconView.backgroundColor = R.color.checked()
             iconView.layer.borderWidth = 0
             textView.isEditable = false
 
