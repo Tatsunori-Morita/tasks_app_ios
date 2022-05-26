@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  TasksViewController.swift
 //  tasks_app_ios
 //
 //  Created by Tatsunori on 2022/04/07.
@@ -10,13 +10,13 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-class HomeViewController: UIViewController {
+class TasksViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
 
-    private static let identifier = String(describing: HomeViewController.self)
+    private static let identifier = String(describing: TasksViewController.self)
     private let disposeBag = DisposeBag()
-    private let homeViewModel = HomeViewModel()
+    private let tasksViewModel = TasksViewModel()
     private var tableViewContentOffset: CGPoint?
 
     override func viewDidLoad() {
@@ -24,9 +24,9 @@ class HomeViewController: UIViewController {
         initialize()
     }
 
-    public static func createInstance() -> HomeViewController {
+    public static func createInstance() -> TasksViewController {
         let storyboard = UIStoryboard(name: self.identifier, bundle: nil)
-        let instance = storyboard.instantiateViewController(withIdentifier: self.identifier) as! HomeViewController
+        let instance = storyboard.instantiateViewController(withIdentifier: self.identifier) as! TasksViewController
         return instance
     }
 
@@ -42,7 +42,7 @@ class HomeViewController: UIViewController {
             forCellReuseIdentifier: TaskTableViewCell.identifier)
 
         // Set tableView.
-        homeViewModel.taskTableViewSectionViewModelBehaviorRelay
+        tasksViewModel.taskTableViewSectionViewModelBehaviorRelay
             .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
@@ -50,8 +50,8 @@ class HomeViewController: UIViewController {
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
             let task = Task(text: "", isChecked: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
-            let oldViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
-            owner.homeViewModel.updateTasks(
+            let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
+            owner.tasksViewModel.updateTasks(
                 viewModel: newViewModel, beforeId: oldViewModel.getId)
         }).disposed(by: disposeBag)
 
@@ -59,16 +59,16 @@ class HomeViewController: UIViewController {
         tableView.rx.itemMoved.asDriver().drive(with: self, onNext: { owner, values in
             let (fromIndexPath, toIndexPath) = values
             guard fromIndexPath != toIndexPath else { return }
-            let fromIndexPathViewModel = owner.homeViewModel.getTaskTableViewCellViewModel(index: fromIndexPath.row)
-            owner.homeViewModel.updateTasks(
+            let fromIndexPathViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: fromIndexPath.row)
+            owner.tasksViewModel.updateTasks(
                 viewModel: fromIndexPathViewModel,
                 fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
         }).disposed(by: disposeBag)
 
         // Add new cell.
         addButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            owner.homeViewModel.addNewTask()
-            let indexPath = IndexPath(row: owner.homeViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
+            owner.tasksViewModel.addNewTask()
+            let indexPath = IndexPath(row: owner.tasksViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
             owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
                 cell.textView.becomeFirstResponder()
@@ -77,7 +77,7 @@ class HomeViewController: UIViewController {
     }
 }
 
-extension HomeViewController {
+extension TasksViewController {
     @objc private func keyboardWillShow(notification: NSNotification) {
         addButton.isHidden = true
         tableViewContentOffset = tableView.contentOffset
@@ -100,7 +100,7 @@ extension HomeViewController {
      }
 }
 
-extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
+extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
         return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { dataSource, tableView, indexPath, viewModel in
             let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
@@ -115,14 +115,14 @@ extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
                 guard let self = self else { return }
                 let task = Task(text: newText, isChecked: viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.homeViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
                 let task = Task(text: viewModel.text, isChecked: !viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.homeViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
             cell.tappedInfoButton = {
@@ -140,7 +140,7 @@ extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
-        dragItem.localObject = homeViewModel.taskTableViewCellViewModelArray[indexPath.row]
+        dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
     }
 

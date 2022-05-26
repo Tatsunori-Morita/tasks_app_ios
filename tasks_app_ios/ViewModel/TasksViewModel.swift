@@ -1,5 +1,5 @@
 //
-//  HomeViewModel.swift
+//  TasksViewModel.swift
 //  tasks_app_ios
 //
 //  Created by Tatsunori on 2022/04/07.
@@ -9,7 +9,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-struct HomeViewModel {
+struct TasksViewModel {
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let _dataSource = DataSource.shared
 
