@@ -11,11 +11,13 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var iconBaseView: UIView!
     @IBOutlet weak var iconView: UIView!
     @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var infoButton: UIButton!
 
     public static let identifier = String(describing: TaskTableViewCell.self)
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
     public var lineHeightChanged: (() -> Void)?
     public var tappedCheckMark: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
+    public var tappedInfoButton: (() -> Void)?
 
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
@@ -42,6 +44,7 @@ class TaskTableViewCell: UITableViewCell {
         textView.delegate = self
         iconBaseView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(tapCheckMark(_:))))
+        infoButton.addTarget(self, action: #selector(touchInfoButton), for: .touchUpInside)
     }
 
     private func initializeLayout() {
@@ -49,6 +52,7 @@ class TaskTableViewCell: UITableViewCell {
         iconView.layer.borderWidth = 1
         iconView.layer.cornerRadius = iconView.frame.width / 2
         iconView.backgroundColor = R.color.background()
+        infoButton.isHidden = true
         textView.isEditable = true
         textView.attributedText = NSMutableAttributedString(string: textView.text!, attributes: normalTextAttributes)
     }
@@ -73,6 +77,10 @@ class TaskTableViewCell: UITableViewCell {
         guard let vm = taskTableViewCellViewModel else { return }
         tappedCheckMark?(vm)
     }
+
+    @objc private func touchInfoButton() {
+        tappedInfoButton?()
+    }
 }
 
 extension TaskTableViewCell: UITextViewDelegate {
@@ -88,8 +96,13 @@ extension TaskTableViewCell: UITextViewDelegate {
         return true
     }
 
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        infoButton.isHidden = false
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
         guard let vm = taskTableViewCellViewModel else { return }
+        infoButton.isHidden = true
         textEditingDidEnd?(textView.text, vm)
     }
 }

@@ -58,7 +58,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="48" id="tuJ-7a-k0N"/>
                                                 </constraints>
-                                                <color key="tintColor" name="text"/>
+                                                <color key="tintColor" name="actionPink"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system"/>
                                             </button>
@@ -105,6 +105,9 @@
     </scenes>
     <resources>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <namedColor name="actionPink">
+            <color red="0.92941176470588238" green="0.6470588235294118" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="background">
             <color red="0.98039215686274506" green="0.98039215686274506" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

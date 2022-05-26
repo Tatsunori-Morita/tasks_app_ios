@@ -124,6 +124,10 @@ extension HomeViewController: UITableViewDropDelegate, UITableViewDragDelegate {
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.homeViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
             }
+
+            cell.tappedInfoButton = {
+
+            }
             return cell
         }, titleForHeaderInSection: { dataSource, index in
             return dataSource.sectionModels[index].header

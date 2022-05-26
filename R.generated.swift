@@ -114,10 +114,12 @@ struct R: Rswift.Validatable {
   }
   #endif
 
-  /// This `R.color` struct is generated, and contains static references to 6 colors.
+  /// This `R.color` struct is generated, and contains static references to 7 colors.
   struct color {
     /// Color `AccentColor`.
     static let accentColor = Rswift.ColorResource(bundle: R.hostingBundle, name: "AccentColor")
+    /// Color `actionPink`.
+    static let actionPink = Rswift.ColorResource(bundle: R.hostingBundle, name: "actionPink")
     /// Color `background`.
     static let background = Rswift.ColorResource(bundle: R.hostingBundle, name: "background")
     /// Color `checkIconBorder`.
@@ -135,6 +137,15 @@ struct R: Rswift.Validatable {
     @available(iOS 11.0, *)
     static func accentColor(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
       return UIKit.UIColor(resource: R.color.accentColor, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "actionPink", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func actionPink(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.actionPink, compatibleWith: traitCollection)
     }
     #endif
 
@@ -188,6 +199,14 @@ struct R: Rswift.Validatable {
     @available(watchOSApplicationExtension 4.0, *)
     static func accentColor(_: Void = ()) -> UIKit.UIColor? {
       return UIKit.UIColor(named: R.color.accentColor.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "actionPink", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func actionPink(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.actionPink.name)
     }
     #endif
 
@@ -300,18 +319,34 @@ struct R: Rswift.Validatable {
 struct _R: Rswift.Validatable {
   static func validate() throws {
     #if os(iOS) || os(tvOS)
+    try nib.validate()
+    #endif
+    #if os(iOS) || os(tvOS)
     try storyboard.validate()
     #endif
   }
 
   #if os(iOS) || os(tvOS)
-  struct nib {
-    struct _TaskTableViewCell: Rswift.NibResourceType {
+  struct nib: Rswift.Validatable {
+    static func validate() throws {
+      try _TaskTableViewCell.validate()
+    }
+
+    struct _TaskTableViewCell: Rswift.NibResourceType, Rswift.Validatable {
       let bundle = R.hostingBundle
       let name = "TaskTableViewCell"
 
       func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> TaskTableViewCell? {
         return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? TaskTableViewCell
+      }
+
+      static func validate() throws {
+        if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "info.circle") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'info.circle' is used in nib 'TaskTableViewCell', but couldn't be loaded.") } }
+        if #available(iOS 11.0, tvOS 11.0, *) {
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+        }
       }
 
       fileprivate init() {}
@@ -347,6 +382,7 @@ struct _R: Rswift.Validatable {
       static func validate() throws {
         if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "plus") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'plus' is used in storyboard 'HomeViewController', but couldn't be loaded.") } }
         if #available(iOS 11.0, tvOS 11.0, *) {
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in storyboard 'HomeViewController', but couldn't be loaded.") }
           if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'HomeViewController', but couldn't be loaded.") }
           if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'HomeViewController', but couldn't be loaded.") }
         }

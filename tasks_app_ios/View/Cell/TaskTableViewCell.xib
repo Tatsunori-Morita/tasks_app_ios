@@ -16,53 +16,71 @@
                 <rect key="frame" x="0.0" y="0.0" width="428" height="86"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OcT-2c-cZw">
-                        <rect key="frame" x="14" y="0.0" width="56" height="40"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="8A4-dM-96O">
+                        <rect key="frame" x="14" y="0.0" width="390" height="86"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yeP-tX-g5t">
-                                <rect key="frame" x="16" y="8" width="24" height="24"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OcT-2c-cZw">
+                                <rect key="frame" x="0.0" y="0.0" width="56" height="40"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yeP-tX-g5t">
+                                        <rect key="frame" x="16" y="8" width="24" height="24"/>
+                                        <color key="backgroundColor" name="background"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="3e4-Ye-get"/>
+                                            <constraint firstAttribute="width" constant="24" id="VL4-a0-aGt"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
                                 <color key="backgroundColor" name="background"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="24" id="3e4-Ye-get"/>
-                                    <constraint firstAttribute="width" constant="24" id="VL4-a0-aGt"/>
+                                    <constraint firstItem="yeP-tX-g5t" firstAttribute="centerX" secondItem="OcT-2c-cZw" secondAttribute="centerX" id="9h8-Ja-a0u"/>
+                                    <constraint firstItem="yeP-tX-g5t" firstAttribute="centerY" secondItem="OcT-2c-cZw" secondAttribute="centerY" id="H0k-tZ-PN4"/>
+                                    <constraint firstAttribute="width" constant="56" id="L8e-qJ-rS4"/>
+                                    <constraint firstAttribute="height" constant="40" id="yeB-LP-t4z"/>
                                 </constraints>
                             </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbz-4l-I7j">
+                                <rect key="frame" x="56" y="0.0" width="294" height="35.5"/>
+                                <color key="backgroundColor" name="background"/>
+                                <color key="textColor" name="text"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlS-9E-AAN">
+                                <rect key="frame" x="350" y="0.0" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="weE-6L-Mc8"/>
+                                    <constraint firstAttribute="height" constant="40" id="wtI-4E-M8G"/>
+                                </constraints>
+                                <color key="tintColor" name="actionPink"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="info.circle" catalog="system"/>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" name="background"/>
-                        <constraints>
-                            <constraint firstItem="yeP-tX-g5t" firstAttribute="centerX" secondItem="OcT-2c-cZw" secondAttribute="centerX" id="9h8-Ja-a0u"/>
-                            <constraint firstItem="yeP-tX-g5t" firstAttribute="centerY" secondItem="OcT-2c-cZw" secondAttribute="centerY" id="H0k-tZ-PN4"/>
-                            <constraint firstAttribute="width" constant="56" id="L8e-qJ-rS4"/>
-                            <constraint firstAttribute="height" constant="40" id="yeB-LP-t4z"/>
-                        </constraints>
-                    </view>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbz-4l-I7j">
-                        <rect key="frame" x="70" y="3" width="334" height="83"/>
-                        <color key="backgroundColor" name="background"/>
-                        <color key="textColor" name="text"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                    </textView>
+                    </stackView>
                 </subviews>
                 <color key="backgroundColor" name="background"/>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="Lbz-4l-I7j" secondAttribute="bottom" id="2If-69-hPG"/>
-                    <constraint firstItem="OcT-2c-cZw" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Lz4-0M-9wX"/>
-                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="3" id="Qup-a9-GES"/>
-                    <constraint firstItem="OcT-2c-cZw" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="WK6-be-emy"/>
-                    <constraint firstItem="Lbz-4l-I7j" firstAttribute="leading" secondItem="OcT-2c-cZw" secondAttribute="trailing" id="bYw-W8-acF"/>
-                    <constraint firstAttribute="trailing" secondItem="Lbz-4l-I7j" secondAttribute="trailing" constant="24" id="gib-NB-N2H"/>
+                    <constraint firstAttribute="bottom" secondItem="8A4-dM-96O" secondAttribute="bottom" id="Dqp-or-hSb"/>
+                    <constraint firstItem="8A4-dM-96O" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Fno-Vv-gTv"/>
+                    <constraint firstAttribute="trailing" secondItem="8A4-dM-96O" secondAttribute="trailing" constant="24" id="oAq-Pt-fog"/>
+                    <constraint firstItem="8A4-dM-96O" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="r8k-h6-CIB"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="iconBaseView" destination="OcT-2c-cZw" id="F98-Rj-ncp"/>
                 <outlet property="iconView" destination="yeP-tX-g5t" id="P8h-zM-Vbu"/>
+                <outlet property="infoButton" destination="MlS-9E-AAN" id="bVD-8z-cim"/>
                 <outlet property="textView" destination="Lbz-4l-I7j" id="l7P-sU-WwC"/>
             </connections>
             <point key="canvasLocation" x="215.94202898550725" y="154.01785714285714"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="info.circle" catalog="system" width="128" height="121"/>
+        <namedColor name="actionPink">
+            <color red="0.92941176470588238" green="0.6470588235294118" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="background">
             <color red="0.98039215686274506" green="0.98039215686274506" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
