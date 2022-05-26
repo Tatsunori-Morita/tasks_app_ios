@@ -89,12 +89,21 @@ struct R: Rswift.Validatable {
   }
 
   #if os(iOS) || os(tvOS)
-  /// This `R.storyboard` struct is generated, and contains static references to 2 storyboards.
+  /// This `R.storyboard` struct is generated, and contains static references to 3 storyboards.
   struct storyboard {
+    /// Storyboard `DetailViewController`.
+    static let detailViewController = _R.storyboard.detailViewController()
     /// Storyboard `LaunchScreen`.
     static let launchScreen = _R.storyboard.launchScreen()
     /// Storyboard `TasksViewController`.
     static let tasksViewController = _R.storyboard.tasksViewController()
+
+    #if os(iOS) || os(tvOS)
+    /// `UIStoryboard(name: "DetailViewController", bundle: ...)`
+    static func detailViewController(_: Void = ()) -> UIKit.UIStoryboard {
+      return UIKit.UIStoryboard(resource: R.storyboard.detailViewController)
+    }
+    #endif
 
     #if os(iOS) || os(tvOS)
     /// `UIStoryboard(name: "LaunchScreen", bundle: ...)`
@@ -114,10 +123,12 @@ struct R: Rswift.Validatable {
   }
   #endif
 
-  /// This `R.color` struct is generated, and contains static references to 7 colors.
+  /// This `R.color` struct is generated, and contains static references to 8 colors.
   struct color {
     /// Color `AccentColor`.
     static let accentColor = Rswift.ColorResource(bundle: R.hostingBundle, name: "AccentColor")
+    /// Color `actionBlue`.
+    static let actionBlue = Rswift.ColorResource(bundle: R.hostingBundle, name: "actionBlue")
     /// Color `actionPink`.
     static let actionPink = Rswift.ColorResource(bundle: R.hostingBundle, name: "actionPink")
     /// Color `background`.
@@ -137,6 +148,15 @@ struct R: Rswift.Validatable {
     @available(iOS 11.0, *)
     static func accentColor(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
       return UIKit.UIColor(resource: R.color.accentColor, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "actionBlue", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func actionBlue(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.actionBlue, compatibleWith: traitCollection)
     }
     #endif
 
@@ -199,6 +219,14 @@ struct R: Rswift.Validatable {
     @available(watchOSApplicationExtension 4.0, *)
     static func accentColor(_: Void = ()) -> UIKit.UIColor? {
       return UIKit.UIColor(named: R.color.accentColor.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "actionBlue", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func actionBlue(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.actionBlue.name)
     }
     #endif
 
@@ -360,12 +388,38 @@ struct _R: Rswift.Validatable {
   struct storyboard: Rswift.Validatable {
     static func validate() throws {
       #if os(iOS) || os(tvOS)
+      try detailViewController.validate()
+      #endif
+      #if os(iOS) || os(tvOS)
       try launchScreen.validate()
       #endif
       #if os(iOS) || os(tvOS)
       try tasksViewController.validate()
       #endif
     }
+
+    #if os(iOS) || os(tvOS)
+    struct detailViewController: Rswift.StoryboardResourceType, Rswift.Validatable {
+      let bundle = R.hostingBundle
+      let detailViewController = StoryboardViewControllerResource<DetailViewController>(identifier: "DetailViewController")
+      let name = "DetailViewController"
+
+      func detailViewController(_: Void = ()) -> DetailViewController? {
+        return UIKit.UIStoryboard(resource: self).instantiateViewController(withResource: detailViewController)
+      }
+
+      static func validate() throws {
+        if #available(iOS 11.0, tvOS 11.0, *) {
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+        }
+        if _R.storyboard.detailViewController().detailViewController() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'detailViewController' could not be loaded from storyboard 'DetailViewController' as 'DetailViewController'.") }
+      }
+
+      fileprivate init() {}
+    }
+    #endif
 
     #if os(iOS) || os(tvOS)
     struct launchScreen: Rswift.StoryboardResourceWithInitialControllerType, Rswift.Validatable {

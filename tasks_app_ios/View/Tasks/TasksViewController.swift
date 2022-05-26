@@ -125,8 +125,9 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                 self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
-            cell.tappedInfoButton = {
-
+            cell.tappedInfoButton = { [unowned self] in
+                let nav = UINavigationController(rootViewController: DetailViewController.createInstance())
+                self.present(nav, animated: true)
             }
             return cell
         }, titleForHeaderInSection: { dataSource, index in
