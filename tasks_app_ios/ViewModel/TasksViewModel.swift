@@ -51,11 +51,13 @@ struct TasksViewModel {
         save(taskTableViewSectionViewModel: section)
     }
 
-    public func updateTasks(viewModel: TaskTableViewCellViewModel, fromIndex: Int, toIndex: Int) {
+    public func updateTasks(viewModel: TaskTableViewCellViewModel, toIndex: Int) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        section.items.remove(at: fromIndex)
-        section.items.insert(viewModel, at: toIndex)
-        save(taskTableViewSectionViewModel: section)
+        if let index = section.items.firstIndex(where: { $0.getId == viewModel.getId }) {
+            section.items.remove(at: index)
+            section.items.insert(viewModel, at: toIndex)
+            save(taskTableViewSectionViewModel: section)
+        }
     }
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
