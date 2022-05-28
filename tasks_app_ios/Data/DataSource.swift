@@ -36,4 +36,17 @@ class DataSource {
         }
         return [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
     }
+
+    public func loadSubTasks(parentId: String) -> [TaskTableViewSectionViewModel] {
+        guard
+            let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
+            let taskModels = try? JSONDecoder().decode(Array.self, from: objects) as [Task],
+            !parentId.isEmpty
+        else { return [TaskTableViewSectionViewModel(header: "", items: [])] }
+        var cellViewModels: [TaskTableViewCellViewModel] = []
+        taskModels.filter { model in model.getParentId == parentId }.forEach { taskModel in
+            cellViewModels.append(TaskTableViewCellViewModel(task: taskModel))
+        }
+        return [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
+    }
 }

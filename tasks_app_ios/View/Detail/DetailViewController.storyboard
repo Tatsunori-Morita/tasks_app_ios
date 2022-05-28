@@ -5,7 +5,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,10 +20,10 @@
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6pl-mj-RzC" userLabel="ContentView">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="698"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="708"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="AQo-Wj-y16">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="698"/>
+                                                <rect key="frame" x="0.0" y="10" width="414" height="698"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="ROk-2J-zOc">
                                                         <rect key="frame" x="0.0" y="0.0" width="414" height="647"/>
@@ -105,7 +104,7 @@
                                             <constraint firstAttribute="bottom" secondItem="AQo-Wj-y16" secondAttribute="bottom" id="ZkF-Oo-goJ"/>
                                             <constraint firstAttribute="trailing" secondItem="AQo-Wj-y16" secondAttribute="trailing" id="rFc-EM-3vP"/>
                                             <constraint firstItem="AQo-Wj-y16" firstAttribute="leading" secondItem="6pl-mj-RzC" secondAttribute="leading" id="zkb-e5-aX2"/>
-                                            <constraint firstItem="AQo-Wj-y16" firstAttribute="top" secondItem="6pl-mj-RzC" secondAttribute="top" id="zy5-qf-aE0"/>
+                                            <constraint firstItem="AQo-Wj-y16" firstAttribute="top" secondItem="6pl-mj-RzC" secondAttribute="top" constant="10" id="zy5-qf-aE0"/>
                                         </constraints>
                                     </view>
                                 </subviews>
@@ -122,7 +121,7 @@
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="background"/>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="0gT-0g-3RR" secondAttribute="trailing" id="avO-MF-7af"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="0gT-0g-3RR" secondAttribute="bottom" id="dxe-W5-o9x"/>
@@ -131,7 +130,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="addTaskButton" destination="GlX-yx-OZp" id="KV7-Wl-c8y"/>
+                        <outlet property="notesTextView" destination="Utl-JV-x1D" id="NqR-09-xFI"/>
                         <outlet property="tableView" destination="tJa-uJ-oBg" id="q2K-rU-zRY"/>
+                        <outlet property="titleTextView" destination="BDz-g6-BCb" id="WHR-NU-Zon"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -149,8 +151,5 @@
         <namedColor name="text">
             <color red="0.015686274509803921" green="0.015686274509803921" blue="0.015686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
     </resources>
 </document>

@@ -17,7 +17,7 @@ class TaskTableViewCell: UITableViewCell {
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
     public var lineHeightChanged: (() -> Void)?
     public var tappedCheckMark: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
-    public var tappedInfoButton: (() -> Void)?
+    public var tappedInfoButton: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
 
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
@@ -79,7 +79,8 @@ class TaskTableViewCell: UITableViewCell {
     }
 
     @objc private func touchInfoButton() {
-        tappedInfoButton?()
+        guard let vm = taskTableViewCellViewModel else { return }
+        tappedInfoButton?(vm)
     }
 }
 
