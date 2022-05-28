@@ -26,7 +26,7 @@ class TaskTableViewCell: UITableViewCell {
         .foregroundColor: R.color.text()!
     ]
 
-    let checkedTextAttributes: [NSAttributedString.Key: Any] = [
+    private let checkedTextAttributes: [NSAttributedString.Key: Any] = [
         .font: UIFont.systemFont(ofSize: 16),
         .foregroundColor: R.color.checkedText()!
     ]
@@ -43,8 +43,8 @@ class TaskTableViewCell: UITableViewCell {
         textView.returnKeyType = .done
         textView.delegate = self
         iconBaseView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(tapCheckMark(_:))))
-        infoButton.addTarget(self, action: #selector(touchInfoButton), for: .touchUpInside)
+            UITapGestureRecognizer(target: self, action: #selector(_tappedCheckMark(_:))))
+        infoButton.addTarget(self, action: #selector(_tappedInfoButton), for: .touchUpInside)
     }
 
     private func initializeLayout() {
@@ -73,14 +73,14 @@ class TaskTableViewCell: UITableViewCell {
         }
     }
 
-    @objc private func tapCheckMark(_ sender: UITapGestureRecognizer) {
-        guard let vm = taskTableViewCellViewModel else { return }
-        tappedCheckMark?(vm)
+    @objc private func _tappedCheckMark(_ sender: UITapGestureRecognizer) {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        tappedCheckMark?(viewModel)
     }
 
-    @objc private func touchInfoButton() {
-        guard let vm = taskTableViewCellViewModel else { return }
-        tappedInfoButton?(vm)
+    @objc private func _tappedInfoButton() {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        tappedInfoButton?(viewModel)
     }
 }
 
@@ -102,8 +102,8 @@ extension TaskTableViewCell: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        guard let vm = taskTableViewCellViewModel else { return }
+        guard let viewModel = taskTableViewCellViewModel else { return }
         infoButton.isHidden = true
-        textEditingDidEnd?(textView.text, vm)
+        textEditingDidEnd?(textView.text, viewModel)
     }
 }

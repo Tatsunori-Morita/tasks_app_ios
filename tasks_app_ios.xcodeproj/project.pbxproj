@@ -21,6 +21,7 @@
 		0E29962D283A0FE400299574 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E29962C283A0FE400299574 /* R.generated.swift */; };
 		0E475852280118210003F3C2 /* Color.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E475851280118210003F3C2 /* Color.xcassets */; };
 		0E6608D3280ABC150012E28E /* TaskTableViewSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */; };
+		0E80DC612840980700034DA1 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E80DC602840980700034DA1 /* DetailViewModel.swift */; };
 		0E8731EF283F9DE300F6CF68 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E8731EE283F9DE300F6CF68 /* DetailViewController.swift */; };
 		0E8731F1283F9E2E00F6CF68 /* DetailViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0E8731F0283F9E2E00F6CF68 /* DetailViewController.storyboard */; };
 		0E9A4739282F5B2B00AD5536 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9A4738282F5B2B00AD5536 /* DataSource.swift */; };
@@ -46,6 +47,7 @@
 		0E29962C283A0FE400299574 /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
 		0E475851280118210003F3C2 /* Color.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Color.xcassets; sourceTree = "<group>"; };
 		0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTableViewSectionViewModel.swift; sourceTree = "<group>"; };
+		0E80DC602840980700034DA1 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		0E8731EE283F9DE300F6CF68 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		0E8731F0283F9E2E00F6CF68 /* DetailViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DetailViewController.storyboard; sourceTree = "<group>"; };
 		0E9A4738282F5B2B00AD5536 /* DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
@@ -109,6 +111,7 @@
 				0E13FACD27FF17B900C08753 /* TasksViewModel.swift */,
 				0E13FACA27FF158F00C08753 /* TaskTableViewCellViewModel.swift */,
 				0E6608D2280ABC150012E28E /* TaskTableViewSectionViewModel.swift */,
+				0E80DC602840980700034DA1 /* DetailViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				0E6608D3280ABC150012E28E /* TaskTableViewSectionViewModel.swift in Sources */,
 				0E13FACB27FF158F00C08753 /* TaskTableViewCellViewModel.swift in Sources */,
 				0E13FAB127FF0B9100C08753 /* AppDelegate.swift in Sources */,
+				0E80DC612840980700034DA1 /* DetailViewModel.swift in Sources */,
 				0E13FAB327FF0B9100C08753 /* SceneDelegate.swift in Sources */,
 				0E29962D283A0FE400299574 /* R.generated.swift in Sources */,
 				0E13FAC927FF154200C08753 /* UIColor.swift in Sources */,

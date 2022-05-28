@@ -12,7 +12,7 @@ import RxDataSources
 
 class TasksViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var addTaskButton: UIButton!
 
     private static let identifier = String(describing: TasksViewController.self)
     private let disposeBag = DisposeBag()
@@ -31,7 +31,6 @@ class TasksViewController: UIViewController {
     }
 
     private func initialize() {
-        addButton.setTitle("", for: .normal)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.dragDelegate = self
@@ -42,16 +41,16 @@ class TasksViewController: UIViewController {
             forCellReuseIdentifier: TaskTableViewCell.identifier)
 
         // Set tableView.
-        tasksViewModel.taskTableViewSectionViewModelBehaviorRelay
+        tasksViewModel.taskTableViewSectionViewModelObservable
             .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
-            let task = Task(text: "", isChecked: false)
+            let task = Task(title: "", isChecked: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
-            owner.tasksViewModel.updateTasks(
+            owner.tasksViewModel.updateTask(
                 viewModel: newViewModel, beforeId: oldViewModel.getId)
         }).disposed(by: disposeBag)
 
@@ -60,14 +59,12 @@ class TasksViewController: UIViewController {
             let (fromIndexPath, toIndexPath) = values
             guard fromIndexPath != toIndexPath else { return }
             let fromIndexPathViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: fromIndexPath.row)
-            owner.tasksViewModel.updateTasks(
-                viewModel: fromIndexPathViewModel,
-                fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
+            owner.tasksViewModel.moveTask(fromViewModel: fromIndexPathViewModel, toIndex: toIndexPath.row)
         }).disposed(by: disposeBag)
 
         // Add new cell.
-        addButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            owner.tasksViewModel.addNewTask()
+        addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            owner.tasksViewModel.addTaskCell()
             let indexPath = IndexPath(row: owner.tasksViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
             owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
@@ -79,7 +76,7 @@ class TasksViewController: UIViewController {
 
 extension TasksViewController {
     @objc private func keyboardWillShow(notification: NSNotification) {
-        addButton.isHidden = true
+        addTaskButton.isHidden = true
         tableViewContentOffset = tableView.contentOffset
         if let keyboardHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height {
             tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
@@ -87,9 +84,8 @@ extension TasksViewController {
      }
 
      @objc private func keyboardWillHide(notification: NSNotification) {
-         DispatchQueue.main.async { [weak self] in
-             guard let self = self else { return }
-             self.addButton.isHidden = false
+         DispatchQueue.main.async { [unowned self] in
+             self.addTaskButton.isHidden = false
              UIView.animate(withDuration: 0.2, animations: {
                  if let unwrappedOffset = self.tableViewContentOffset {
                      self.tableView.contentOffset = unwrappedOffset
@@ -111,22 +107,23 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                 tableView.endUpdates()
             }
 
-            cell.textEditingDidEnd = { [weak self] newText, viewModel in
-                guard let self = self else { return }
-                let task = Task(text: newText, isChecked: viewModel.isChecked)
+            cell.textEditingDidEnd = { [unowned self] newText, viewModel in
+                let task = Task(title: newText, isChecked: viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
-            cell.tappedCheckMark = { [weak self] viewModel in
-                guard let self = self else { return }
-                let task = Task(text: viewModel.text, isChecked: !viewModel.isChecked)
+            cell.tappedCheckMark = { [unowned self] viewModel in
+                let task = Task(title: viewModel.text, isChecked: !viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.getId)
             }
 
-            cell.tappedInfoButton = { [unowned self] in
-                let nav = UINavigationController(rootViewController: DetailViewController.createInstance())
+            cell.tappedInfoButton = { [unowned self] viewModel in
+                let nav = UINavigationController(
+                    rootViewController: DetailViewController.createInstance(
+                        viewModel: DetailViewModel(
+                            task: viewModel.task, parentId: viewModel.parentId)))
                 self.present(nav, animated: true)
             }
             return cell

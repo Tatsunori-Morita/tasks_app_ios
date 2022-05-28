@@ -10,60 +10,33 @@ import RxCocoa
 import RxDataSources
 
 struct TasksViewModel {
-    private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let _dataSource = DataSource.shared
 
-    public var taskTableViewSectionViewModelBehaviorRelay: Observable<[TaskTableViewSectionViewModel]> {
-        _taskTableViewSectionViewModels.asObservable()
+    public var taskTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
+        _dataSource.taskTableViewSectionViewModelObservable
     }
 
     public var taskTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
-        guard let section = _taskTableViewSectionViewModels.value.last else { return [] }
-        return section.items
+        _dataSource.taskTableViewCellViewModelArray
     }
 
     init() {
-        _taskTableViewSectionViewModels.accept(_dataSource.loadTasks)
+        _dataSource.loadMainTasks()
     }
 
     public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
-        let section = _taskTableViewSectionViewModels.value.last!
-        return section.items[index]
+        _dataSource.getTaskTableViewCellViewModel(index: index)
     }
 
-    public func addNewTask() {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        section.items.append(TaskTableViewCellViewModel(
-            task: Task(text: "", isChecked: false),
-            isNewTask: true))
-        _taskTableViewSectionViewModels.accept([section])
+    public func addTaskCell() {
+        _dataSource.addTaskCell()
     }
 
-    public func updateTasks(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.getId == beforeId }) {
-            // Update or delete task.
-            section.items[index] = viewModel
-        } else {
-            // Add new task.
-            section.items.append(viewModel)
-        }
-        save(taskTableViewSectionViewModel: section)
+    public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+        _dataSource.updateTask(viewModel: viewModel, beforeId: beforeId)
     }
 
-    public func updateTasks(viewModel: TaskTableViewCellViewModel, toIndex: Int) {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.getId == viewModel.getId }) {
-            section.items.remove(at: index)
-            section.items.insert(viewModel, at: toIndex)
-            save(taskTableViewSectionViewModel: section)
-        }
-    }
-
-    private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
-        var section = taskTableViewSectionViewModel
-        section.items = section.items.filter { !$0.text.isEmpty }
-        _taskTableViewSectionViewModels.accept([section])
-        _dataSource.saveAll(sectionViewModels: _taskTableViewSectionViewModels.value)
+    public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
+        _dataSource.moveTask(fromViewModel: fromViewModel, toIndex: toIndex)
     }
 }

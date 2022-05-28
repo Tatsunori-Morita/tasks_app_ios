@@ -8,7 +8,6 @@
 import RxDataSources
 
 class TaskTableViewCellViewModel {
-    private  let _id = UUID().uuidString
     private let _task: Task
     private let _isNewTask: Bool
 
@@ -18,7 +17,7 @@ class TaskTableViewCellViewModel {
     }
 
     public var getId: String {
-        _id
+        _task.getId
     }
 
     public var task: Task {
@@ -26,7 +25,7 @@ class TaskTableViewCellViewModel {
     }
 
     public var text: String {
-        _task.getText
+        _task.getTitle
     }
 
     public var isChecked: Bool {
@@ -36,11 +35,15 @@ class TaskTableViewCellViewModel {
     public var isNewTask: Bool {
         _isNewTask
     }
+
+    public var parentId: String {
+        _task.getParentId
+    }
 }
 
 extension TaskTableViewCellViewModel: IdentifiableType, Equatable {
-    var identity: String {
-        return self._id
+    public var identity: String {
+        return self._task.getId
     }
 
     static func == (lhs: TaskTableViewCellViewModel, rhs: TaskTableViewCellViewModel) -> Bool {
