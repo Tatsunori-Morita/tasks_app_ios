@@ -14,6 +14,7 @@ class DataSource {
     public static let shared = DataSource()
 
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
+    private let _detailTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let userDefaultsName = "Tasks"
 
     public var taskTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
@@ -22,6 +23,15 @@ class DataSource {
 
     public var taskTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
         guard let section = _taskTableViewSectionViewModels.value.last else { return [] }
+        return section.items
+    }
+
+    public var detailTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
+        _detailTableViewSectionViewModels.asObservable()
+    }
+
+    public var detailTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
+        guard let section = _detailTableViewSectionViewModels.value.last else { return [] }
         return section.items
     }
 
@@ -63,30 +73,27 @@ class DataSource {
     }
 
     public func loadMainTasks() {
-        guard
-            let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
-            let taskModels = try? JSONDecoder().decode(Array.self, from: objects) as [Task]
-        else { return }
-
-        var cellViewModels: [TaskTableViewCellViewModel] = []
-        taskModels.forEach { taskModel in
-            cellViewModels.append(TaskTableViewCellViewModel(task: taskModel))
+        let cellViewModels = loadTasks().map { task in
+            return TaskTableViewCellViewModel(task: task)
         }
         let sections = [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
         _taskTableViewSectionViewModels.accept(sections)
     }
 
     public func loadSubTasks(parentId: String) {
+        let cellViewModels = loadTasks().filter { $0.getParentId == parentId }.map { task in
+            return TaskTableViewCellViewModel(task: task)
+        }
+        let sections = [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
+        _detailTableViewSectionViewModels.accept(sections)
+    }
+
+    private func loadTasks() -> [Task] {
         guard
             let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
-            let taskModels = try? JSONDecoder().decode(Array.self, from: objects) as [Task],
-            !parentId.isEmpty
-        else { return }
-
-        var cellViewModels: [TaskTableViewCellViewModel] = []
-        taskModels.filter { model in model.getParentId == parentId }.forEach { taskModel in
-            cellViewModels.append(TaskTableViewCellViewModel(task: taskModel))
-        }
+            let tasks = try? JSONDecoder().decode(Array.self, from: objects) as [Task]
+        else { return [] }
+        return tasks
     }
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {

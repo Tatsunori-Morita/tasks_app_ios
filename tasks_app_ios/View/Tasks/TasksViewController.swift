@@ -64,11 +64,13 @@ class TasksViewController: UIViewController {
 
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            owner.tasksViewModel.addTaskCell()
-            let indexPath = IndexPath(row: owner.tasksViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
-            owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-            if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
-                cell.textView.becomeFirstResponder()
+            DispatchQueue.main.async {
+                owner.tasksViewModel.addTaskCell()
+                let indexPath = IndexPath(row: owner.tasksViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
+                owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+                    cell.textView.becomeFirstResponder()
+                }
             }
         }).disposed(by: disposeBag)
     }
@@ -120,11 +122,21 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             }
 
             cell.tappedInfoButton = { [unowned self] viewModel in
-                let nav = UINavigationController(
-                    rootViewController: DetailViewController.createInstance(
-                        viewModel: DetailViewModel(
-                            task: viewModel.task, parentId: viewModel.parentId)))
-                self.present(nav, animated: true)
+                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.getId == viewModel.getId}) {
+                    let indexPath = IndexPath(row: index, section: 0)
+                    UIView.animate(withDuration: 0, delay: 0, animations: {
+                        if let cell = self.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+                            cell.textView.resignFirstResponder()
+                        }
+                    }, completion: {_ in
+                        let textEditingDidEndViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
+                        let nav = UINavigationController(
+                            rootViewController: DetailViewController.createInstance(
+                                viewModel: DetailViewModel(
+                                    task: textEditingDidEndViewModel.task, parentId: textEditingDidEndViewModel.getParentId)))
+                        self.present(nav, animated: true)
+                    })
+                }
             }
             return cell
         }, titleForHeaderInSection: { dataSource, index in

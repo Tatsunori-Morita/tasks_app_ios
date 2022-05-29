@@ -51,10 +51,22 @@ class DetailViewController: UIViewController {
             navigationController?.navigationBar.shadowImage = UIImage()
         }
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: nil)
-        navigationItem.leftBarButtonItem?.tintColor = R.color.actionBlue()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: nil)
-        navigationItem.rightBarButtonItem?.tintColor = R.color.actionBlue()
+        let leftBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = leftBarButton
+        leftBarButton.tintColor = R.color.actionBlue()
+        leftBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            owner.dismiss(animated: true)
+        }).disposed(by: disposeBag)
+
+        let rightBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
+        navigationItem.rightBarButtonItem = rightBarButton
+        rightBarButton.tintColor = R.color.actionBlue()
+        rightBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            let task = Task(title: owner.titleTextView.text, notes: owner.notesTextView.text, isChecked: owner.detailViewModel.isChecked)
+            let newViewModel = TaskTableViewCellViewModel(task: task)
+            owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
+            owner.dismiss(animated: true)
+        }).disposed(by: disposeBag)
 
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
@@ -69,13 +81,13 @@ class DetailViewController: UIViewController {
         titleTextView.text = detailViewModel?.text
 
         // Set tableView.
-        detailViewModel.taskTableViewSectionViewModelBehaviorRelay
+        detailViewModel.detailTableViewSectionViewModelObservable
             .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            owner.detailViewModel.addNewTask()
+            owner.detailViewModel.addTaskCell()
             let indexPath = IndexPath(row: owner.detailViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
             owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {

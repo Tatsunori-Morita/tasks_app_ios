@@ -36,7 +36,7 @@ class TaskTableViewCellViewModel {
         _isNewTask
     }
 
-    public var parentId: String {
+    public var getParentId: String {
         _task.getParentId
     }
 }
