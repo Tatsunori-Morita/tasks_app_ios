@@ -53,7 +53,7 @@ class DataSource {
 
     public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.getId == beforeId }) {
+        if let index = section.items.firstIndex(where: { $0.id == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
         } else {
@@ -65,7 +65,7 @@ class DataSource {
 
     public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.getId == fromViewModel.getId }) {
+        if let index = section.items.firstIndex(where: { $0.id == fromViewModel.id }) {
             section.items.remove(at: index)
             section.items.insert(fromViewModel, at: toIndex)
             save(taskTableViewSectionViewModel: section)
@@ -81,7 +81,7 @@ class DataSource {
     }
 
     public func loadSubTasks(parentId: String) {
-        let cellViewModels = loadTasks().filter { $0.getParentId == parentId }.map { task in
+        let cellViewModels = loadTasks().filter { $0.parentId == parentId }.map { task in
             return TaskTableViewCellViewModel(task: task)
         }
         let sections = [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]

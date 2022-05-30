@@ -51,7 +51,7 @@ class TasksViewController: UIViewController {
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
             owner.tasksViewModel.updateTask(
-                viewModel: newViewModel, beforeId: oldViewModel.getId)
+                viewModel: newViewModel, beforeId: oldViewModel.id)
         }).disposed(by: disposeBag)
 
         // Move cell.
@@ -112,17 +112,17 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             cell.textEditingDidEnd = { [unowned self] newText, viewModel in
                 let task = Task(title: newText, isChecked: viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedCheckMark = { [unowned self] viewModel in
                 let task = Task(title: viewModel.text, isChecked: !viewModel.isChecked)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
-                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.getId)
+                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedInfoButton = { [unowned self] viewModel in
-                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.getId == viewModel.getId}) {
+                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
                     let indexPath = IndexPath(row: index, section: 0)
                     UIView.animate(withDuration: 0, delay: 0, animations: {
                         if let cell = self.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
@@ -133,7 +133,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                         let nav = UINavigationController(
                             rootViewController: DetailViewController.createInstance(
                                 viewModel: DetailViewModel(
-                                    task: textEditingDidEndViewModel.task, parentId: textEditingDidEndViewModel.getParentId)))
+                                    task: textEditingDidEndViewModel.task, parentId: textEditingDidEndViewModel.parentId)))
                         self.present(nav, animated: true)
                     })
                 }

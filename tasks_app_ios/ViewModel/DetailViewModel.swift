@@ -25,18 +25,18 @@ class DetailViewModel: BaseViewModel {
     }
 
     public var id: String {
-        _task.getId
+        _task.id
     }
 
     public var text: String {
-        _task.getTitle
+        _task.title
     }
 
     public var notes: String {
-        _task.getNotes
+        _task.notes
     }
 
     public var isChecked: Bool {
-        _task.getIsChecked
+        _task.isChecked
     }
 }

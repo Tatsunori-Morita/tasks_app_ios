@@ -16,8 +16,8 @@ class TaskTableViewCellViewModel {
         _isNewTask = isNewTask
     }
 
-    public var getId: String {
-        _task.getId
+    public var id: String {
+        _task.id
     }
 
     public var task: Task {
@@ -25,25 +25,25 @@ class TaskTableViewCellViewModel {
     }
 
     public var text: String {
-        _task.getTitle
+        _task.title
     }
 
     public var isChecked: Bool {
-        _task.getIsChecked
+        _task.isChecked
     }
 
     public var isNewTask: Bool {
         _isNewTask
     }
 
-    public var getParentId: String {
-        _task.getParentId
+    public var parentId: String {
+        _task.parentId
     }
 }
 
 extension TaskTableViewCellViewModel: IdentifiableType, Equatable {
     public var identity: String {
-        return self._task.getId
+        return self._task.id
     }
 
     static func == (lhs: TaskTableViewCellViewModel, rhs: TaskTableViewCellViewModel) -> Bool {

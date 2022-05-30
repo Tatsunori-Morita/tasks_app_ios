@@ -13,38 +13,34 @@ struct Task: Codable {
     private let _notes: String
     private let _isChecked: Bool
     private let _parentId: String
-    private let _order: Double
+    private let _children: [Task]
 
-    init(id: String = "", title: String, notes: String = "", isChecked: Bool, parentId: String = "", order: Double = 0.0) {
+    init(id: String = "", title: String, notes: String = "", isChecked: Bool, parentId: String = "", children: [Task] = []) {
         _id = id.isEmpty ? UUID().uuidString : id
         _title = title
         _notes = notes
         _isChecked = isChecked
         _parentId = parentId
-        _order = order
+        _children = children
     }
 
-    public var getId: String {
+    public var id: String {
         _id
     }
 
-    public var getTitle: String {
+    public var title: String {
         _title
     }
 
-    public var getNotes: String {
+    public var notes: String {
         _notes
     }
 
-    public var getIsChecked: Bool {
+    public var isChecked: Bool {
         _isChecked
     }
 
-    public var getParentId: String {
+    public var parentId: String {
         _parentId
-    }
-
-    public var getOrder: Double {
-        _order
     }
 }
