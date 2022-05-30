@@ -24,8 +24,12 @@ class TaskTableViewCellViewModel {
         _task
     }
 
-    public var text: String {
+    public var title: String {
         _task.title
+    }
+
+    public var note: String {
+        _task.notes
     }
 
     public var isChecked: Bool {
@@ -38,6 +42,14 @@ class TaskTableViewCellViewModel {
 
     public var parentId: String {
         _task.parentId
+    }
+
+    public var children: [Task] {
+        _task.children
+    }
+
+    public var isChild: Bool {
+        !_task.parentId.isEmpty
     }
 }
 

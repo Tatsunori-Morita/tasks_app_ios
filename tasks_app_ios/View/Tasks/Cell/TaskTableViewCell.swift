@@ -60,7 +60,7 @@ class TaskTableViewCell: UITableViewCell {
     public func configure(viewModel: TaskTableViewCellViewModel) {
         initializeLayout()
         taskTableViewCellViewModel = viewModel
-        textView.text = viewModel.text
+        textView.text = viewModel.title
 
         if viewModel.isChecked {
             iconView.backgroundColor = R.color.checked()
@@ -98,7 +98,8 @@ extension TaskTableViewCell: UITextViewDelegate {
     }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
-        infoButton.isHidden = false
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        infoButton.isHidden = viewModel.isChild
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

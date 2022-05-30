@@ -51,18 +51,22 @@ class DetailViewController: UIViewController {
             navigationController?.navigationBar.shadowImage = UIImage()
         }
 
-        let leftBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
-        navigationItem.leftBarButtonItem = leftBarButton
-        leftBarButton.tintColor = R.color.actionBlue()
-        leftBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+        let cancelBarButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = cancelBarButton
+        cancelBarButton.tintColor = R.color.actionBlue()
+        cancelBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             owner.dismiss(animated: true)
         }).disposed(by: disposeBag)
 
-        let rightBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
-        navigationItem.rightBarButtonItem = rightBarButton
-        rightBarButton.tintColor = R.color.actionBlue()
-        rightBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            let task = Task(title: owner.titleTextView.text, notes: owner.notesTextView.text, isChecked: owner.detailViewModel.isChecked)
+        let doneBarButton = UIBarButtonItem(barButtonSystemItem: .done, target: nil, action: nil)
+        navigationItem.rightBarButtonItem = doneBarButton
+        doneBarButton.tintColor = R.color.actionBlue()
+        doneBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            let children = owner.detailViewModel.detailTableViewCellViewModelArray.map { return $0.task }
+            let task = Task(title: owner.titleTextView.text,
+                            notes: owner.notesTextView.text,
+                            isChecked: owner.detailViewModel.isChecked,
+                            children: children)
             let newViewModel = TaskTableViewCellViewModel(task: task)
             owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
             owner.dismiss(animated: true)
@@ -78,7 +82,9 @@ class DetailViewController: UIViewController {
             forCellReuseIdentifier: TaskTableViewCell.identifier)
         tableViewConstraintHeight = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewConstraintHeight?.isActive = true
-        titleTextView.text = detailViewModel?.text
+
+        titleTextView.text = detailViewModel.text
+        notesTextView.text = detailViewModel.notes
 
         // Set tableView.
         detailViewModel.detailTableViewSectionViewModelObservable
@@ -87,11 +93,13 @@ class DetailViewController: UIViewController {
 
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
-            owner.detailViewModel.addTaskCell()
-            let indexPath = IndexPath(row: owner.detailViewModel.taskTableViewCellViewModelArray.count - 1, section: 0)
-            owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-            if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
-                cell.textView.becomeFirstResponder()
+            DispatchQueue.main.async {
+                owner.detailViewModel.addSubTaskCell()
+                let indexPath = IndexPath(row: owner.detailViewModel.detailTableViewCellViewModelArray.count - 1, section: 0)
+                owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+                    cell.textView.becomeFirstResponder()
+                }
             }
         }).disposed(by: disposeBag)
     }
@@ -110,21 +118,16 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
             cell.textEditingDidEnd = { [weak self] newText, viewModel in
                 guard let self = self else { return }
-//                let task = Task(text: newText, isChecked: viewModel.isChecked)
-//                let newViewModel = TaskTableViewCellViewModel(task: task)
-//                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
+                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked)
+                let newViewModel = TaskTableViewCellViewModel(task: task)
+                self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
-//                let task = Task(text: viewModel.text, isChecked: !viewModel.isChecked)
-//                let newViewModel = TaskTableViewCellViewModel(task: task)
-//                self.tasksViewModel.updateTasks(viewModel: newViewModel, beforeId: viewModel.getId)
-            }
-
-            cell.tappedInfoButton = { [unowned self] viewModel in
-//                let nav = UINavigationController(rootViewController: DetailViewController.createInstance())
-//                self.present(nav, animated: true)
+                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked)
+                let newViewModel = TaskTableViewCellViewModel(task: task)
+                self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
             return cell
         }, titleForHeaderInSection: { dataSource, index in

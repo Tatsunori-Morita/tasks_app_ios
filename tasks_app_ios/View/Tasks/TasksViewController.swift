@@ -47,7 +47,7 @@ class TasksViewController: UIViewController {
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
-            let task = Task(title: "", isChecked: false)
+            let task = Task(title: "", notes: "", isChecked: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
             owner.tasksViewModel.updateTask(
@@ -110,13 +110,13 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             }
 
             cell.textEditingDidEnd = { [unowned self] newText, viewModel in
-                let task = Task(title: newText, isChecked: viewModel.isChecked)
+                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked, children: viewModel.children)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedCheckMark = { [unowned self] viewModel in
-                let task = Task(title: viewModel.text, isChecked: !viewModel.isChecked)
+                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked, children: viewModel.children)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
@@ -132,8 +132,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                         let textEditingDidEndViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
                         let nav = UINavigationController(
                             rootViewController: DetailViewController.createInstance(
-                                viewModel: DetailViewModel(
-                                    task: textEditingDidEndViewModel.task, parentId: textEditingDidEndViewModel.parentId)))
+                                viewModel: DetailViewModel(task: textEditingDidEndViewModel.task)))
                         self.present(nav, animated: true)
                     })
                 }

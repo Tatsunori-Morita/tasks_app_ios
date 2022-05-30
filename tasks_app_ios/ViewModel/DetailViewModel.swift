@@ -12,12 +12,27 @@ import RxDataSources
 class DetailViewModel: BaseViewModel {
     private let _task: Task
     private let _isNewTask: Bool
+    private let _detailTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
 
-    init(task: Task, isNewTask: Bool = false, parentId: String = "") {
+    init(task: Task, isNewTask: Bool = false) {
         _task = task
         _isNewTask = isNewTask
         super.init()
-        _dataSource.loadSubTasks(parentId: parentId)
+        var sections = _detailTableViewSectionViewModels.value
+        let items = task.children.map { child in
+            return TaskTableViewCellViewModel(task: child)
+        }
+        sections.append(contentsOf: [TaskTableViewSectionViewModel(header: "", items: items)])
+        _detailTableViewSectionViewModels.accept(sections)
+    }
+
+    public var detailTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
+        _detailTableViewSectionViewModels.asObservable()
+    }
+
+    public var detailTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
+        guard let section = _detailTableViewSectionViewModels.value.last else { return [] }
+        return section.items
     }
 
     public var task: Task {
@@ -38,5 +53,31 @@ class DetailViewModel: BaseViewModel {
 
     public var isChecked: Bool {
         _task.isChecked
+    }
+
+    public func addSubTaskCell() {
+        guard var section = _detailTableViewSectionViewModels.value.last else { return }
+        section.items.append(TaskTableViewCellViewModel(
+            task: Task(title: "", notes: "", isChecked: false, children: []),
+            isNewTask: true))
+        _detailTableViewSectionViewModels.accept([section])
+    }
+
+    public func updateSubTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+        guard var section = _detailTableViewSectionViewModels.value.last else { return }
+        if let index = section.items.firstIndex(where: { $0.id == beforeId }) {
+            // Update or delete task.
+            section.items[index] = viewModel
+        } else {
+            // Add new task.
+            section.items.append(viewModel)
+        }
+        save(taskTableViewSectionViewModel: section)
+    }
+
+    private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
+        var section = taskTableViewSectionViewModel
+        section.items = section.items.filter { !$0.title.isEmpty }
+        _detailTableViewSectionViewModels.accept([section])
     }
 }

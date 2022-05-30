@@ -20,14 +20,6 @@ class BaseViewModel {
         _dataSource.taskTableViewCellViewModelArray
     }
 
-    public var detailTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
-        _dataSource.detailTableViewSectionViewModelObservable
-    }
-
-    public var detailTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
-        _dataSource.detailTableViewCellViewModelArray
-    }
-
     public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
         _dataSource.getTaskTableViewCellViewModel(index: index)
     }

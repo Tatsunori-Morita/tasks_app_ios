@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Task: Codable {
+class Task: Codable {
     private let _id: String
     private let _title: String
     private let _notes: String
@@ -15,7 +15,7 @@ struct Task: Codable {
     private let _parentId: String
     private let _children: [Task]
 
-    init(id: String = "", title: String, notes: String = "", isChecked: Bool, parentId: String = "", children: [Task] = []) {
+    init(id: String = "", title: String, notes: String, isChecked: Bool, parentId: String = "", children: [Task] = []) {
         _id = id.isEmpty ? UUID().uuidString : id
         _title = title
         _notes = notes
@@ -42,5 +42,9 @@ struct Task: Codable {
 
     public var parentId: String {
         _parentId
+    }
+
+    public var children: [Task] {
+        _children
     }
 }

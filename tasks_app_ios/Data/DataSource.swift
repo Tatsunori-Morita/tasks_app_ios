@@ -14,7 +14,6 @@ class DataSource {
     public static let shared = DataSource()
 
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
-    private let _detailTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
     private let userDefaultsName = "Tasks"
 
     public var taskTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
@@ -23,15 +22,6 @@ class DataSource {
 
     public var taskTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
         guard let section = _taskTableViewSectionViewModels.value.last else { return [] }
-        return section.items
-    }
-
-    public var detailTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
-        _detailTableViewSectionViewModels.asObservable()
-    }
-
-    public var detailTableViewCellViewModelArray: [TaskTableViewCellViewModel] {
-        guard let section = _detailTableViewSectionViewModels.value.last else { return [] }
         return section.items
     }
 
@@ -46,7 +36,7 @@ class DataSource {
     public func addTaskCell() {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(title: "", isChecked: false),
+            task: Task(title: "", notes: "", isChecked: false),
             isNewTask: true))
         _taskTableViewSectionViewModels.accept([section])
     }
@@ -80,14 +70,6 @@ class DataSource {
         _taskTableViewSectionViewModels.accept(sections)
     }
 
-    public func loadSubTasks(parentId: String) {
-        let cellViewModels = loadTasks().filter { $0.parentId == parentId }.map { task in
-            return TaskTableViewCellViewModel(task: task)
-        }
-        let sections = [TaskTableViewSectionViewModel(header: "", items: cellViewModels)]
-        _detailTableViewSectionViewModels.accept(sections)
-    }
-
     private func loadTasks() -> [Task] {
         guard
             let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
@@ -98,7 +80,7 @@ class DataSource {
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
         var section = taskTableViewSectionViewModel
-        section.items = section.items.filter { !$0.text.isEmpty }
+        section.items = section.items.filter { !$0.title.isEmpty }
         _taskTableViewSectionViewModels.accept([section])
         saveUserDefaults(sectionViewModels: _taskTableViewSectionViewModels.value)
     }
