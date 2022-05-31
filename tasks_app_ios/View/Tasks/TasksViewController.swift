@@ -124,9 +124,10 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             cell.tappedInfoButton = { [unowned self] viewModel in
                 if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
                     let indexPath = IndexPath(row: index, section: 0)
-                    UIView.animate(withDuration: 0, delay: 0, animations: {
+                    UIView.animate(withDuration: 0.1, delay: 0, animations: {
                         if let cell = self.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
                             cell.textView.resignFirstResponder()
+                            cell.infoButton.isHidden = true
                         }
                     }, completion: {_ in
                         let textEditingDidEndViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
