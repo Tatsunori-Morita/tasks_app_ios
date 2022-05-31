@@ -59,6 +59,14 @@ class DetailViewModel: BaseViewModel {
         _task.parentId
     }
 
+    public func getDetailTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
+        let section = _detailTableViewSectionViewModels.value.last!
+        if index < 0 || section.items.endIndex < index {
+            fatalError("index of out of range: \(index)")
+        }
+        return section.items[index]
+    }
+
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(

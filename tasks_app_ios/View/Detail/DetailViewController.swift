@@ -91,6 +91,16 @@ class DetailViewController: UIViewController {
             .bind(to: tableView.rx.items(dataSource: dataSource()))
             .disposed(by: disposeBag)
 
+        // Delete cell.
+        tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
+            let task = Task(title: "", notes: "", isChecked: false)
+            let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
+            let oldViewModel = owner.detailViewModel.getDetailTableViewCellViewModel(index: indexPath.row)
+            owner.detailViewModel.updateSubTask(
+                viewModel: newViewModel, beforeId: oldViewModel.id)
+            self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
+        }).disposed(by: disposeBag)
+
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             DispatchQueue.main.async {
