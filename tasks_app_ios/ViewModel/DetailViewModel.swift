@@ -55,10 +55,14 @@ class DetailViewModel: BaseViewModel {
         _task.isChecked
     }
 
+    public var parentId: String {
+        _task.parentId
+    }
+
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(title: "", notes: "", isChecked: false, children: []),
+            task: Task(title: "", notes: "", isChecked: false, parentId: _task.id, children: []),
             isNewTask: true))
         _detailTableViewSectionViewModels.accept([section])
     }

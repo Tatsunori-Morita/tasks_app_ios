@@ -119,14 +119,14 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
             cell.textEditingDidEnd = { [weak self] newText, viewModel in
                 guard let self = self else { return }
-                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked)
+                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
-                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked)
+                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
