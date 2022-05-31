@@ -101,6 +101,14 @@ class DetailViewController: UIViewController {
             self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
         }).disposed(by: disposeBag)
 
+        // Move cell.
+        tableView.rx.itemMoved.asDriver().drive(with: self, onNext: { owner, values in
+            let (fromIndexPath, toIndexPath) = values
+            guard fromIndexPath != toIndexPath else { return }
+            let fromIndexPathViewModel = owner.detailViewModel.getDetailTableViewCellViewModel(index: fromIndexPath.row)
+            owner.detailViewModel.moveTask(fromViewModel: fromIndexPathViewModel, toIndex: toIndexPath.row)
+        }).disposed(by: disposeBag)
+
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             DispatchQueue.main.async {
@@ -152,7 +160,7 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
-//        dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
+        dragItem.localObject = detailViewModel.detailTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
     }
 

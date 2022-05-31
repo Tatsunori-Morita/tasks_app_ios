@@ -67,6 +67,16 @@ class DetailViewModel: BaseViewModel {
         return section.items[index]
     }
 
+    public override func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
+        guard var section = _detailTableViewSectionViewModels.value.last else { return }
+        if let index = section.items.firstIndex(where: { $0.id == fromViewModel.id }) {
+            section.items.remove(at: index)
+            section.items.insert(fromViewModel, at: toIndex)
+            section.items = section.items.filter { !$0.title.isEmpty }
+            _detailTableViewSectionViewModels.accept([section])
+        }
+    }
+
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
