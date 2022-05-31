@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import RxDataSources
+import IQKeyboardManagerSwift
 
 class DetailViewController: UIViewController {
     @IBOutlet weak var titleTextView: PlaceholderTextview!
@@ -62,6 +63,7 @@ class DetailViewController: UIViewController {
         navigationItem.rightBarButtonItem = doneBarButton
         doneBarButton.tintColor = R.color.actionBlue()
         doneBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            IQKeyboardManager.shared.resignFirstResponder()
             let children = owner.detailViewModel.detailTableViewCellViewModelArray.map { return $0.task }
             let task = Task(title: owner.titleTextView.text,
                             notes: owner.notesTextView.text,
@@ -144,11 +146,13 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
                 let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
+                self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
             }
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
-                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked, parentId: viewModel.id)
+                let task = Task(title: viewModel.title, notes: viewModel.note,
+                                isChecked: !viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
