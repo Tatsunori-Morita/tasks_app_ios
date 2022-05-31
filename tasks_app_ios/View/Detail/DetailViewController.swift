@@ -95,6 +95,7 @@ class DetailViewController: UIViewController {
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             DispatchQueue.main.async {
                 owner.detailViewModel.addSubTaskCell()
+                owner.tableViewConstraintHeight?.constant = owner.tableView.contentSize.height
                 let indexPath = IndexPath(row: owner.detailViewModel.detailTableViewCellViewModelArray.count - 1, section: 0)
                 owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
