@@ -11,8 +11,8 @@ import RxCocoa
 import RxDataSources
 
 class DetailViewController: UIViewController {
-    @IBOutlet weak var titleTextView: UITextView!
-    @IBOutlet weak var notesTextView: UITextView!
+    @IBOutlet weak var titleTextView: PlaceholderTextview!
+    @IBOutlet weak var notesTextView: PlaceholderTextview!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addTaskButton: UIButton!
 
@@ -84,7 +84,11 @@ class DetailViewController: UIViewController {
         tableViewConstraintHeight?.isActive = true
 
         titleTextView.text = detailViewModel.text
+        titleTextView.returnKeyType = .done
+        titleTextView.delegate = self
         notesTextView.text = detailViewModel.notes
+        notesTextView.returnKeyType = .done
+        notesTextView.delegate = self
 
         // Set tableView.
         detailViewModel.detailTableViewSectionViewModelObservable
@@ -165,4 +169,14 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {}
+}
+
+extension DetailViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
+    }
 }

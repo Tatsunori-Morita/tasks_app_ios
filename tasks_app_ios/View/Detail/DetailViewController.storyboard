@@ -34,12 +34,15 @@
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="coQ-cr-2kB">
                                                                         <rect key="frame" x="0.0" y="0.0" width="414" height="61.5"/>
                                                                         <subviews>
-                                                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="Title" translatesAutoresizingMaskIntoConstraints="NO" id="BDz-g6-BCb">
+                                                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BDz-g6-BCb" customClass="PlaceholderTextview" customModule="tasks_app_ios" customModuleProvider="target">
                                                                                 <rect key="frame" x="14" y="10" width="376" height="41.5"/>
                                                                                 <color key="backgroundColor" name="background"/>
                                                                                 <color key="textColor" name="text"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                                                <userDefinedRuntimeAttributes>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="Title"/>
+                                                                                </userDefinedRuntimeAttributes>
                                                                             </textView>
                                                                         </subviews>
                                                                         <color key="backgroundColor" name="background"/>
@@ -53,12 +56,15 @@
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ngd-dV-whl">
                                                                         <rect key="frame" x="0.0" y="61.5" width="414" height="61.5"/>
                                                                         <subviews>
-                                                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="Notes" translatesAutoresizingMaskIntoConstraints="NO" id="Utl-JV-x1D">
+                                                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Utl-JV-x1D" customClass="PlaceholderTextview" customModule="tasks_app_ios" customModuleProvider="target">
                                                                                 <rect key="frame" x="14" y="10" width="376" height="41.5"/>
                                                                                 <color key="backgroundColor" name="background"/>
                                                                                 <color key="textColor" name="text"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                                                <userDefinedRuntimeAttributes>
+                                                                                    <userDefinedRuntimeAttribute type="string" keyPath="placeholder" value="Notes"/>
+                                                                                </userDefinedRuntimeAttributes>
                                                                             </textView>
                                                                         </subviews>
                                                                         <color key="backgroundColor" name="background"/>
@@ -131,9 +137,9 @@
                     </view>
                     <connections>
                         <outlet property="addTaskButton" destination="GlX-yx-OZp" id="KV7-Wl-c8y"/>
-                        <outlet property="notesTextView" destination="Utl-JV-x1D" id="NqR-09-xFI"/>
+                        <outlet property="notesTextView" destination="Utl-JV-x1D" id="973-Ix-ozA"/>
                         <outlet property="tableView" destination="tJa-uJ-oBg" id="q2K-rU-zRY"/>
-                        <outlet property="titleTextView" destination="BDz-g6-BCb" id="WHR-NU-Zon"/>
+                        <outlet property="titleTextView" destination="BDz-g6-BCb" id="DuL-QB-CLZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -141,6 +147,14 @@
             <point key="canvasLocation" x="137.68115942028987" y="109.82142857142857"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="BDz-g6-BCb">
+            <size key="intrinsicContentSize" width="10" height="35.5"/>
+        </designable>
+        <designable name="Utl-JV-x1D">
+            <size key="intrinsicContentSize" width="10" height="35.5"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="actionPink">
             <color red="0.92941176470588238" green="0.6470588235294118" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
