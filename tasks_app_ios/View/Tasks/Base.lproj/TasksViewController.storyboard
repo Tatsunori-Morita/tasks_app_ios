@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Home View Controller-->
+        <!--Tasks View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="HomeViewController" id="BYZ-38-t0r" customClass="HomeViewController" customModule="tasks_app_ios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TasksViewController" id="BYZ-38-t0r" customClass="TasksViewController" customModule="tasks_app_ios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -53,17 +53,17 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ft9-7e-pzp">
                                         <rect key="frame" x="14" y="0.0" width="386" height="48"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ly0-7G-BTq">
-                                                <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ly0-7G-BTq">
+                                                <rect key="frame" x="0.0" y="0.0" width="43.5" height="48"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="48" id="tuJ-7a-k0N"/>
                                                 </constraints>
-                                                <color key="tintColor" name="text"/>
+                                                <color key="tintColor" name="actionPink"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system"/>
                                             </button>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZDu-N0-dX6">
-                                                <rect key="frame" x="48" y="0.0" width="338" height="48"/>
+                                                <rect key="frame" x="43.5" y="0.0" width="342.5" height="48"/>
                                                 <color key="backgroundColor" name="background"/>
                                             </view>
                                         </subviews>
@@ -94,7 +94,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="addButton" destination="ly0-7G-BTq" id="eIn-Y4-ZnO"/>
+                        <outlet property="addTaskButton" destination="ly0-7G-BTq" id="eIn-Y4-ZnO"/>
                         <outlet property="tableView" destination="7hb-yE-XEL" id="6WD-w1-u6c"/>
                     </connections>
                 </viewController>
@@ -105,6 +105,9 @@
     </scenes>
     <resources>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <namedColor name="actionPink">
+            <color red="0.92941176470588238" green="0.6470588235294118" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="background">
             <color red="0.98039215686274506" green="0.98039215686274506" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

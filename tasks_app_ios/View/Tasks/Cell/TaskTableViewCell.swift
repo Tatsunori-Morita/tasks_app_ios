@@ -11,11 +11,13 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var iconBaseView: UIView!
     @IBOutlet weak var iconView: UIView!
     @IBOutlet weak var textView: UITextView!
+    @IBOutlet weak var infoButton: UIButton!
 
     public static let identifier = String(describing: TaskTableViewCell.self)
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
     public var lineHeightChanged: (() -> Void)?
     public var tappedCheckMark: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
+    public var tappedInfoButton: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
 
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
@@ -24,7 +26,7 @@ class TaskTableViewCell: UITableViewCell {
         .foregroundColor: R.color.text()!
     ]
 
-    let checkedTextAttributes: [NSAttributedString.Key: Any] = [
+    private let checkedTextAttributes: [NSAttributedString.Key: Any] = [
         .font: UIFont.systemFont(ofSize: 16),
         .foregroundColor: R.color.checkedText()!
     ]
@@ -41,7 +43,8 @@ class TaskTableViewCell: UITableViewCell {
         textView.returnKeyType = .done
         textView.delegate = self
         iconBaseView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(tapCheckMark(_:))))
+            UITapGestureRecognizer(target: self, action: #selector(_tappedCheckMark(_:))))
+        infoButton.addTarget(self, action: #selector(_tappedInfoButton), for: .touchUpInside)
     }
 
     private func initializeLayout() {
@@ -49,6 +52,7 @@ class TaskTableViewCell: UITableViewCell {
         iconView.layer.borderWidth = 1
         iconView.layer.cornerRadius = iconView.frame.width / 2
         iconView.backgroundColor = R.color.background()
+        infoButton.isHidden = true
         textView.isEditable = true
         textView.attributedText = NSMutableAttributedString(string: textView.text!, attributes: normalTextAttributes)
     }
@@ -56,7 +60,7 @@ class TaskTableViewCell: UITableViewCell {
     public func configure(viewModel: TaskTableViewCellViewModel) {
         initializeLayout()
         taskTableViewCellViewModel = viewModel
-        textView.text = viewModel.text
+        textView.text = viewModel.title
 
         if viewModel.isChecked {
             iconView.backgroundColor = R.color.checked()
@@ -69,9 +73,14 @@ class TaskTableViewCell: UITableViewCell {
         }
     }
 
-    @objc private func tapCheckMark(_ sender: UITapGestureRecognizer) {
-        guard let vm = taskTableViewCellViewModel else { return }
-        tappedCheckMark?(vm)
+    @objc private func _tappedCheckMark(_ sender: UITapGestureRecognizer) {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        tappedCheckMark?(viewModel)
+    }
+
+    @objc private func _tappedInfoButton() {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        tappedInfoButton?(viewModel)
     }
 }
 
@@ -88,8 +97,14 @@ extension TaskTableViewCell: UITextViewDelegate {
         return true
     }
 
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        infoButton.isHidden = viewModel.isChild
+    }
+
     func textViewDidEndEditing(_ textView: UITextView) {
-        guard let vm = taskTableViewCellViewModel else { return }
-        textEditingDidEnd?(textView.text, vm)
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        infoButton.isHidden = true
+        textEditingDidEnd?(textView.text, viewModel)
     }
 }

@@ -89,17 +89,19 @@ struct R: Rswift.Validatable {
   }
 
   #if os(iOS) || os(tvOS)
-  /// This `R.storyboard` struct is generated, and contains static references to 2 storyboards.
+  /// This `R.storyboard` struct is generated, and contains static references to 3 storyboards.
   struct storyboard {
-    /// Storyboard `HomeViewController`.
-    static let homeViewController = _R.storyboard.homeViewController()
+    /// Storyboard `DetailViewController`.
+    static let detailViewController = _R.storyboard.detailViewController()
     /// Storyboard `LaunchScreen`.
     static let launchScreen = _R.storyboard.launchScreen()
+    /// Storyboard `TasksViewController`.
+    static let tasksViewController = _R.storyboard.tasksViewController()
 
     #if os(iOS) || os(tvOS)
-    /// `UIStoryboard(name: "HomeViewController", bundle: ...)`
-    static func homeViewController(_: Void = ()) -> UIKit.UIStoryboard {
-      return UIKit.UIStoryboard(resource: R.storyboard.homeViewController)
+    /// `UIStoryboard(name: "DetailViewController", bundle: ...)`
+    static func detailViewController(_: Void = ()) -> UIKit.UIStoryboard {
+      return UIKit.UIStoryboard(resource: R.storyboard.detailViewController)
     }
     #endif
 
@@ -110,14 +112,25 @@ struct R: Rswift.Validatable {
     }
     #endif
 
+    #if os(iOS) || os(tvOS)
+    /// `UIStoryboard(name: "TasksViewController", bundle: ...)`
+    static func tasksViewController(_: Void = ()) -> UIKit.UIStoryboard {
+      return UIKit.UIStoryboard(resource: R.storyboard.tasksViewController)
+    }
+    #endif
+
     fileprivate init() {}
   }
   #endif
 
-  /// This `R.color` struct is generated, and contains static references to 6 colors.
+  /// This `R.color` struct is generated, and contains static references to 8 colors.
   struct color {
     /// Color `AccentColor`.
     static let accentColor = Rswift.ColorResource(bundle: R.hostingBundle, name: "AccentColor")
+    /// Color `actionBlue`.
+    static let actionBlue = Rswift.ColorResource(bundle: R.hostingBundle, name: "actionBlue")
+    /// Color `actionPink`.
+    static let actionPink = Rswift.ColorResource(bundle: R.hostingBundle, name: "actionPink")
     /// Color `background`.
     static let background = Rswift.ColorResource(bundle: R.hostingBundle, name: "background")
     /// Color `checkIconBorder`.
@@ -135,6 +148,24 @@ struct R: Rswift.Validatable {
     @available(iOS 11.0, *)
     static func accentColor(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
       return UIKit.UIColor(resource: R.color.accentColor, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "actionBlue", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func actionBlue(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.actionBlue, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "actionPink", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func actionPink(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.actionPink, compatibleWith: traitCollection)
     }
     #endif
 
@@ -188,6 +219,22 @@ struct R: Rswift.Validatable {
     @available(watchOSApplicationExtension 4.0, *)
     static func accentColor(_: Void = ()) -> UIKit.UIColor? {
       return UIKit.UIColor(named: R.color.accentColor.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "actionBlue", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func actionBlue(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.actionBlue.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "actionPink", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func actionPink(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.actionPink.name)
     }
     #endif
 
@@ -300,18 +347,34 @@ struct R: Rswift.Validatable {
 struct _R: Rswift.Validatable {
   static func validate() throws {
     #if os(iOS) || os(tvOS)
+    try nib.validate()
+    #endif
+    #if os(iOS) || os(tvOS)
     try storyboard.validate()
     #endif
   }
 
   #if os(iOS) || os(tvOS)
-  struct nib {
-    struct _TaskTableViewCell: Rswift.NibResourceType {
+  struct nib: Rswift.Validatable {
+    static func validate() throws {
+      try _TaskTableViewCell.validate()
+    }
+
+    struct _TaskTableViewCell: Rswift.NibResourceType, Rswift.Validatable {
       let bundle = R.hostingBundle
       let name = "TaskTableViewCell"
 
       func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> TaskTableViewCell? {
         return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? TaskTableViewCell
+      }
+
+      static func validate() throws {
+        if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "info.circle") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'info.circle' is used in nib 'TaskTableViewCell', but couldn't be loaded.") } }
+        if #available(iOS 11.0, tvOS 11.0, *) {
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }
+        }
       }
 
       fileprivate init() {}
@@ -325,32 +388,33 @@ struct _R: Rswift.Validatable {
   struct storyboard: Rswift.Validatable {
     static func validate() throws {
       #if os(iOS) || os(tvOS)
-      try homeViewController.validate()
+      try detailViewController.validate()
       #endif
       #if os(iOS) || os(tvOS)
       try launchScreen.validate()
       #endif
+      #if os(iOS) || os(tvOS)
+      try tasksViewController.validate()
+      #endif
     }
 
     #if os(iOS) || os(tvOS)
-    struct homeViewController: Rswift.StoryboardResourceWithInitialControllerType, Rswift.Validatable {
-      typealias InitialController = HomeViewController
-
+    struct detailViewController: Rswift.StoryboardResourceType, Rswift.Validatable {
       let bundle = R.hostingBundle
-      let homeViewController = StoryboardViewControllerResource<HomeViewController>(identifier: "HomeViewController")
-      let name = "HomeViewController"
+      let detailViewController = StoryboardViewControllerResource<DetailViewController>(identifier: "DetailViewController")
+      let name = "DetailViewController"
 
-      func homeViewController(_: Void = ()) -> HomeViewController? {
-        return UIKit.UIStoryboard(resource: self).instantiateViewController(withResource: homeViewController)
+      func detailViewController(_: Void = ()) -> DetailViewController? {
+        return UIKit.UIStoryboard(resource: self).instantiateViewController(withResource: detailViewController)
       }
 
       static func validate() throws {
-        if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "plus") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'plus' is used in storyboard 'HomeViewController', but couldn't be loaded.") } }
         if #available(iOS 11.0, tvOS 11.0, *) {
-          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'HomeViewController', but couldn't be loaded.") }
-          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'HomeViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
         }
-        if _R.storyboard.homeViewController().homeViewController() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'homeViewController' could not be loaded from storyboard 'HomeViewController' as 'HomeViewController'.") }
+        if _R.storyboard.detailViewController().detailViewController() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'detailViewController' could not be loaded from storyboard 'DetailViewController' as 'DetailViewController'.") }
       }
 
       fileprivate init() {}
@@ -367,6 +431,32 @@ struct _R: Rswift.Validatable {
       static func validate() throws {
         if #available(iOS 11.0, tvOS 11.0, *) {
         }
+      }
+
+      fileprivate init() {}
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    struct tasksViewController: Rswift.StoryboardResourceWithInitialControllerType, Rswift.Validatable {
+      typealias InitialController = TasksViewController
+
+      let bundle = R.hostingBundle
+      let name = "TasksViewController"
+      let tasksViewController = StoryboardViewControllerResource<TasksViewController>(identifier: "TasksViewController")
+
+      func tasksViewController(_: Void = ()) -> TasksViewController? {
+        return UIKit.UIStoryboard(resource: self).instantiateViewController(withResource: tasksViewController)
+      }
+
+      static func validate() throws {
+        if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "plus") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'plus' is used in storyboard 'TasksViewController', but couldn't be loaded.") } }
+        if #available(iOS 11.0, tvOS 11.0, *) {
+          if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in storyboard 'TasksViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'TasksViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'TasksViewController', but couldn't be loaded.") }
+        }
+        if _R.storyboard.tasksViewController().tasksViewController() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'tasksViewController' could not be loaded from storyboard 'TasksViewController' as 'TasksViewController'.") }
       }
 
       fileprivate init() {}

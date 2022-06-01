@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="default" indentationWidth="10" rowHeight="86" id="KGk-i7-Jjw" customClass="TaskTableViewCell" customModule="tasks_app_ios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="428" height="86"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="428" height="86"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="8A4-dM-96O">
+                        <rect key="frame" x="14" y="0.0" width="390" height="86"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OcT-2c-cZw">
+                                <rect key="frame" x="0.0" y="0.0" width="56" height="40"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yeP-tX-g5t">
+                                        <rect key="frame" x="16" y="8" width="24" height="24"/>
+                                        <color key="backgroundColor" name="background"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="3e4-Ye-get"/>
+                                            <constraint firstAttribute="width" constant="24" id="VL4-a0-aGt"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" name="background"/>
+                                <constraints>
+                                    <constraint firstItem="yeP-tX-g5t" firstAttribute="centerX" secondItem="OcT-2c-cZw" secondAttribute="centerX" id="9h8-Ja-a0u"/>
+                                    <constraint firstItem="yeP-tX-g5t" firstAttribute="centerY" secondItem="OcT-2c-cZw" secondAttribute="centerY" id="H0k-tZ-PN4"/>
+                                    <constraint firstAttribute="width" constant="56" id="L8e-qJ-rS4"/>
+                                    <constraint firstAttribute="height" constant="40" id="yeB-LP-t4z"/>
+                                </constraints>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbz-4l-I7j">
+                                <rect key="frame" x="56" y="0.0" width="294" height="35.5"/>
+                                <color key="backgroundColor" name="background"/>
+                                <color key="textColor" name="text"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlS-9E-AAN">
+                                <rect key="frame" x="350" y="0.0" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="weE-6L-Mc8"/>
+                                    <constraint firstAttribute="height" constant="40" id="wtI-4E-M8G"/>
+                                </constraints>
+                                <color key="tintColor" name="actionPink"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="info.circle" catalog="system"/>
+                            </button>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <color key="backgroundColor" name="background"/>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="8A4-dM-96O" secondAttribute="bottom" id="Dqp-or-hSb"/>
+                    <constraint firstItem="8A4-dM-96O" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Fno-Vv-gTv"/>
+                    <constraint firstAttribute="trailing" secondItem="8A4-dM-96O" secondAttribute="trailing" constant="24" id="oAq-Pt-fog"/>
+                    <constraint firstItem="8A4-dM-96O" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="14" id="r8k-h6-CIB"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="iconBaseView" destination="OcT-2c-cZw" id="F98-Rj-ncp"/>
+                <outlet property="iconView" destination="yeP-tX-g5t" id="P8h-zM-Vbu"/>
+                <outlet property="infoButton" destination="MlS-9E-AAN" id="bVD-8z-cim"/>
+                <outlet property="textView" destination="Lbz-4l-I7j" id="l7P-sU-WwC"/>
+            </connections>
+            <point key="canvasLocation" x="215.94202898550725" y="154.01785714285714"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="info.circle" catalog="system" width="128" height="121"/>
+        <namedColor name="actionPink">
+            <color red="0.92941176470588238" green="0.6470588235294118" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="background">
+            <color red="0.98039215686274506" green="0.98039215686274506" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="text">
+            <color red="0.015686274509803921" green="0.015686274509803921" blue="0.015686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
