@@ -43,12 +43,12 @@ class DetailViewController: UIViewController {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = R.color.background()
+            appearance.backgroundColor = R.color.detailBackground()
             appearance.shadowColor = .clear
             navigationController?.navigationBar.standardAppearance = appearance
             navigationController?.navigationBar.scrollEdgeAppearance = appearance
         } else {
-            navigationController?.navigationBar.barTintColor = R.color.background()
+            navigationController?.navigationBar.barTintColor = R.color.detailBackground()
             navigationController?.navigationBar.shadowImage = UIImage()
         }
 
@@ -80,8 +80,8 @@ class DetailViewController: UIViewController {
         tableView.dropDelegate = self
         tableView.dragInteractionEnabled = true
         tableView.register(
-            UINib(nibName: TaskTableViewCell.identifier, bundle: nil),
-            forCellReuseIdentifier: TaskTableViewCell.identifier)
+            UINib(nibName: DetailTableViewCell.identifier, bundle: nil),
+            forCellReuseIdentifier: DetailTableViewCell.identifier)
         tableViewConstraintHeight = tableView.heightAnchor.constraint(equalToConstant: 0)
         tableViewConstraintHeight?.isActive = true
 
@@ -122,7 +122,7 @@ class DetailViewController: UIViewController {
                 owner.tableViewConstraintHeight?.constant = owner.tableView.contentSize.height
                 let indexPath = IndexPath(row: owner.detailViewModel.detailTableViewCellViewModelArray.count - 1, section: 0)
                 owner.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-                if let cell = owner.tableView.cellForRow(at: indexPath) as? TaskTableViewCell {
+                if let cell = owner.tableView.cellForRow(at: indexPath) as? DetailTableViewCell {
                     cell.textView.becomeFirstResponder()
                 }
             }
@@ -133,7 +133,7 @@ class DetailViewController: UIViewController {
 extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
         return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { dataSource, tableView, indexPath, viewModel in
-            let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: DetailTableViewCell.identifier, for: indexPath) as! DetailTableViewCell
             cell.configure(viewModel: viewModel)
 
             cell.lineHeightChanged = {

@@ -123,7 +123,7 @@ struct R: Rswift.Validatable {
   }
   #endif
 
-  /// This `R.color` struct is generated, and contains static references to 8 colors.
+  /// This `R.color` struct is generated, and contains static references to 11 colors.
   struct color {
     /// Color `AccentColor`.
     static let accentColor = Rswift.ColorResource(bundle: R.hostingBundle, name: "AccentColor")
@@ -139,6 +139,12 @@ struct R: Rswift.Validatable {
     static let checkedText = Rswift.ColorResource(bundle: R.hostingBundle, name: "checkedText")
     /// Color `checked`.
     static let checked = Rswift.ColorResource(bundle: R.hostingBundle, name: "checked")
+    /// Color `detailAccent`.
+    static let detailAccent = Rswift.ColorResource(bundle: R.hostingBundle, name: "detailAccent")
+    /// Color `detailBackground`.
+    static let detailBackground = Rswift.ColorResource(bundle: R.hostingBundle, name: "detailBackground")
+    /// Color `detailLine`.
+    static let detailLine = Rswift.ColorResource(bundle: R.hostingBundle, name: "detailLine")
     /// Color `text`.
     static let text = Rswift.ColorResource(bundle: R.hostingBundle, name: "text")
 
@@ -202,6 +208,33 @@ struct R: Rswift.Validatable {
     @available(iOS 11.0, *)
     static func checkedText(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
       return UIKit.UIColor(resource: R.color.checkedText, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "detailAccent", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func detailAccent(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.detailAccent, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "detailBackground", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func detailBackground(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.detailBackground, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIColor(named: "detailLine", bundle: ..., traitCollection: ...)`
+    @available(tvOS 11.0, *)
+    @available(iOS 11.0, *)
+    static func detailLine(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIColor? {
+      return UIKit.UIColor(resource: R.color.detailLine, compatibleWith: traitCollection)
     }
     #endif
 
@@ -271,6 +304,30 @@ struct R: Rswift.Validatable {
     #endif
 
     #if os(watchOS)
+    /// `UIColor(named: "detailAccent", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func detailAccent(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.detailAccent.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "detailBackground", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func detailBackground(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.detailBackground.name)
+    }
+    #endif
+
+    #if os(watchOS)
+    /// `UIColor(named: "detailLine", bundle: ..., traitCollection: ...)`
+    @available(watchOSApplicationExtension 4.0, *)
+    static func detailLine(_: Void = ()) -> UIKit.UIColor? {
+      return UIKit.UIColor(named: R.color.detailLine.name)
+    }
+    #endif
+
+    #if os(watchOS)
     /// `UIColor(named: "text", bundle: ..., traitCollection: ...)`
     @available(watchOSApplicationExtension 4.0, *)
     static func text(_: Void = ()) -> UIKit.UIColor? {
@@ -311,10 +368,20 @@ struct R: Rswift.Validatable {
     fileprivate init() {}
   }
 
-  /// This `R.nib` struct is generated, and contains static references to 1 nibs.
+  /// This `R.nib` struct is generated, and contains static references to 2 nibs.
   struct nib {
+    /// Nib `DetailTableViewCell`.
+    static let detailTableViewCell = _R.nib._DetailTableViewCell()
     /// Nib `TaskTableViewCell`.
     static let taskTableViewCell = _R.nib._TaskTableViewCell()
+
+    #if os(iOS) || os(tvOS)
+    /// `UINib(name: "DetailTableViewCell", in: bundle)`
+    @available(*, deprecated, message: "Use UINib(resource: R.nib.detailTableViewCell) instead")
+    static func detailTableViewCell(_: Void = ()) -> UIKit.UINib {
+      return UIKit.UINib(resource: R.nib.detailTableViewCell)
+    }
+    #endif
 
     #if os(iOS) || os(tvOS)
     /// `UINib(name: "TaskTableViewCell", in: bundle)`
@@ -323,6 +390,10 @@ struct R: Rswift.Validatable {
       return UIKit.UINib(resource: R.nib.taskTableViewCell)
     }
     #endif
+
+    static func detailTableViewCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> DetailTableViewCell? {
+      return R.nib.detailTableViewCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? DetailTableViewCell
+    }
 
     static func taskTableViewCell(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> TaskTableViewCell? {
       return R.nib.taskTableViewCell.instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? TaskTableViewCell
@@ -358,6 +429,17 @@ struct _R: Rswift.Validatable {
   struct nib: Rswift.Validatable {
     static func validate() throws {
       try _TaskTableViewCell.validate()
+    }
+
+    struct _DetailTableViewCell: Rswift.NibResourceType {
+      let bundle = R.hostingBundle
+      let name = "DetailTableViewCell"
+
+      func firstView(owner ownerOrNil: AnyObject?, options optionsOrNil: [UINib.OptionsKey : Any]? = nil) -> DetailTableViewCell? {
+        return instantiate(withOwner: ownerOrNil, options: optionsOrNil)[0] as? DetailTableViewCell
+      }
+
+      fileprivate init() {}
     }
 
     struct _TaskTableViewCell: Rswift.NibResourceType, Rswift.Validatable {
@@ -411,7 +493,9 @@ struct _R: Rswift.Validatable {
       static func validate() throws {
         if #available(iOS 11.0, tvOS 11.0, *) {
           if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
-          if UIKit.UIColor(named: "background", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'background' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "detailAccent", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'detailAccent' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "detailBackground", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'detailBackground' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
+          if UIKit.UIColor(named: "detailLine", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'detailLine' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
           if UIKit.UIColor(named: "text", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'text' is used in storyboard 'DetailViewController', but couldn't be loaded.") }
         }
         if _R.storyboard.detailViewController().detailViewController() == nil { throw Rswift.ValidationError(description:"[R.swift] ViewController with identifier 'detailViewController' could not be loaded from storyboard 'DetailViewController' as 'DetailViewController'.") }
