@@ -28,7 +28,7 @@ class TaskTableViewCellViewModel {
         _task.title
     }
 
-    public var note: String {
+    public var notes: String {
         _task.notes
     }
 
@@ -44,8 +44,8 @@ class TaskTableViewCellViewModel {
         _task.parentId
     }
 
-    public var children: [Task] {
-        _task.children
+    public var subTasks: [Task] {
+        _task.subTasks
     }
 
     public var isChild: Bool {

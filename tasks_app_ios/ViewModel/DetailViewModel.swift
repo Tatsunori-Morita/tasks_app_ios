@@ -19,7 +19,7 @@ class DetailViewModel: BaseViewModel {
         _isNewTask = isNewTask
         super.init()
         var sections = _detailTableViewSectionViewModels.value
-        let items = task.children.map { child in
+        let items = task.subTasks.map { child in
             return TaskTableViewCellViewModel(task: child)
         }
         sections.append(contentsOf: [TaskTableViewSectionViewModel(header: "", items: items)])
@@ -80,7 +80,7 @@ class DetailViewModel: BaseViewModel {
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(title: "", notes: "", isChecked: false, parentId: _task.id, children: []),
+            task: Task(title: "", notes: "", isChecked: false, parentId: _task.id, subTasks: []),
             isNewTask: true))
         _detailTableViewSectionViewModels.accept([section])
     }

@@ -110,13 +110,13 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             }
 
             cell.textEditingDidEnd = { [unowned self] newText, viewModel in
-                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked, children: viewModel.children)
+                let task = Task(title: newText, notes: viewModel.notes, isChecked: viewModel.isChecked, subTasks: viewModel.subTasks)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
 
             cell.tappedCheckMark = { [unowned self] viewModel in
-                let task = Task(title: viewModel.title, notes: viewModel.note, isChecked: !viewModel.isChecked, children: viewModel.children)
+                let task = Task(title: viewModel.title, notes: viewModel.notes, isChecked: !viewModel.isChecked, subTasks: viewModel.subTasks)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }

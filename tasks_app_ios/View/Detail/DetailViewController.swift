@@ -68,7 +68,7 @@ class DetailViewController: UIViewController {
             let task = Task(title: owner.titleTextView.text,
                             notes: owner.notesTextView.text,
                             isChecked: owner.detailViewModel.isChecked,
-                            children: children)
+                            subTasks: children)
             let newViewModel = TaskTableViewCellViewModel(task: task)
             owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
             owner.dismiss(animated: true)
@@ -143,7 +143,7 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
             cell.textEditingDidEnd = { [weak self] newText, viewModel in
                 guard let self = self else { return }
-                let task = Task(title: newText, notes: viewModel.note, isChecked: viewModel.isChecked, parentId: viewModel.id)
+                let task = Task(title: newText, notes: viewModel.notes, isChecked: viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
                 self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
@@ -151,7 +151,7 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
-                let task = Task(title: viewModel.title, notes: viewModel.note,
+                let task = Task(title: viewModel.title, notes: viewModel.notes,
                                 isChecked: !viewModel.isChecked, parentId: viewModel.id)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
