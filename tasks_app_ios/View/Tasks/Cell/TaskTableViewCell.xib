@@ -40,14 +40,14 @@
                                 </constraints>
                             </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbz-4l-I7j">
-                                <rect key="frame" x="56" y="0.0" width="294" height="35.5"/>
+                                <rect key="frame" x="56" y="0.0" width="254" height="35.5"/>
                                 <color key="backgroundColor" name="background"/>
                                 <color key="textColor" name="text"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlS-9E-AAN">
-                                <rect key="frame" x="350" y="0.0" width="40" height="40"/>
+                                <rect key="frame" x="310" y="0.0" width="40" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="weE-6L-Mc8"/>
                                     <constraint firstAttribute="height" constant="40" id="wtI-4E-M8G"/>
@@ -55,6 +55,16 @@
                                 <color key="tintColor" name="actionPink"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="info.circle" catalog="system"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N0k-aS-u8t">
+                                <rect key="frame" x="350" y="0.0" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="MI8-SQ-ES4"/>
+                                    <constraint firstAttribute="height" constant="40" id="cje-uc-bbb"/>
+                                </constraints>
+                                <color key="tintColor" name="actionPink"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="chevron.forward" catalog="system"/>
                             </button>
                         </subviews>
                     </stackView>
@@ -71,12 +81,14 @@
                 <outlet property="iconBaseView" destination="OcT-2c-cZw" id="F98-Rj-ncp"/>
                 <outlet property="iconView" destination="yeP-tX-g5t" id="P8h-zM-Vbu"/>
                 <outlet property="infoButton" destination="MlS-9E-AAN" id="bVD-8z-cim"/>
+                <outlet property="subTasksButton" destination="N0k-aS-u8t" id="8Ea-a2-dN0"/>
                 <outlet property="textView" destination="Lbz-4l-I7j" id="l7P-sU-WwC"/>
             </connections>
             <point key="canvasLocation" x="215.94202898550725" y="154.01785714285714"/>
         </tableViewCell>
     </objects>
     <resources>
+        <image name="chevron.forward" catalog="system" width="96" height="128"/>
         <image name="info.circle" catalog="system" width="128" height="121"/>
         <namedColor name="actionPink">
             <color red="0.86274509803921573" green="0.32156862745098042" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

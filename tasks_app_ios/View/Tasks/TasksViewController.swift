@@ -110,7 +110,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             }
 
             cell.textEditingDidEnd = { [unowned self] newText, viewModel in
-                let task = Task(title: newText, notes: viewModel.notes, isChecked: viewModel.isChecked, subTasks: viewModel.subTasks)
+                let task = Task(title: newText, notes: viewModel.notes, isChecked: viewModel.isChecked, subTasks: viewModel.subTasks, isShowedSubTask: viewModel.isShowedSubTasks)
                 let newViewModel = TaskTableViewCellViewModel(task: task)
                 self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
@@ -135,6 +135,28 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                                 viewModel: DetailViewModel(task: textEditingDidEndViewModel.task)))
                         self.present(nav, animated: true)
                     })
+                }
+            }
+
+            cell.tappedSubTasksButton = { [unowned self] viewModel in
+                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
+                    let isShowedSubTasks = !viewModel.isShowedSubTasks
+                    let task = Task(title: viewModel.title, notes: viewModel.notes, isChecked: viewModel.isChecked, subTasks: viewModel.subTasks, isShowedSubTask: isShowedSubTasks)
+                    let newViewModel = TaskTableViewCellViewModel(task: task)
+                    self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
+
+                    if isShowedSubTasks {
+                        let insertedIndex = index + 1
+                        let subTaskViewModels = viewModel.subTasks.map { subTask in
+                            return TaskTableViewCellViewModel(task: subTask)
+                        }
+                        tasksViewModel.insertTask(viewModels: subTaskViewModels, index: insertedIndex)
+                    } else {
+                        viewModel.subTasks.forEach { subTask in
+                            let subTaskViewModel = TaskTableViewCellViewModel(task: Task(id: subTask.id, title: "", notes: "", isChecked: false, parentId: "", subTasks: [], isShowedSubTask: false))
+                            tasksViewModel.updateTask(viewModel: subTaskViewModel, beforeId: subTask.id)
+                        }
+                    }
                 }
             }
             return cell

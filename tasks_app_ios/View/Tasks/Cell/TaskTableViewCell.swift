@@ -12,12 +12,14 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var iconView: UIView!
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var infoButton: UIButton!
+    @IBOutlet weak var subTasksButton: UIButton!
 
     public static let identifier = String(describing: TaskTableViewCell.self)
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
     public var lineHeightChanged: (() -> Void)?
     public var tappedCheckMark: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
     public var tappedInfoButton: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
+    public var tappedSubTasksButton: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
 
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
@@ -45,6 +47,7 @@ class TaskTableViewCell: UITableViewCell {
         iconBaseView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(_tappedCheckMark(_:))))
         infoButton.addTarget(self, action: #selector(_tappedInfoButton), for: .touchUpInside)
+        subTasksButton.addTarget(self, action: #selector(_tappedSubTasksButton), for: .touchUpInside)
     }
 
     private func initializeLayout() {
@@ -53,6 +56,8 @@ class TaskTableViewCell: UITableViewCell {
         iconView.layer.cornerRadius = iconView.frame.width / 2
         iconView.backgroundColor = R.color.background()
         infoButton.isHidden = true
+        subTasksButton.isHidden = true
+        subTasksButton.setImage(UIImage(systemName: "chevron.forward"), for: .normal)
         textView.isEditable = true
         textView.attributedText = NSMutableAttributedString(string: textView.text!, attributes: normalTextAttributes)
     }
@@ -71,6 +76,11 @@ class TaskTableViewCell: UITableViewCell {
             attr.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSMakeRange(0, attr.length))
             textView.attributedText = attr
         }
+
+        subTasksButton.isHidden = !viewModel.hasSubTasks
+        if viewModel.isShowedSubTasks {
+            subTasksButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        }
     }
 
     @objc private func _tappedCheckMark(_ sender: UITapGestureRecognizer) {
@@ -81,6 +91,11 @@ class TaskTableViewCell: UITableViewCell {
     @objc private func _tappedInfoButton() {
         guard let viewModel = taskTableViewCellViewModel else { return }
         tappedInfoButton?(viewModel)
+    }
+
+    @objc private func _tappedSubTasksButton() {
+        guard let viewModel = taskTableViewCellViewModel else { return }
+        tappedSubTasksButton?(viewModel)
     }
 }
 
@@ -100,6 +115,7 @@ extension TaskTableViewCell: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         guard let viewModel = taskTableViewCellViewModel else { return }
         infoButton.isHidden = viewModel.isChild
+        subTasksButton.isHidden = true
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

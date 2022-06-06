@@ -51,6 +51,14 @@ class TaskTableViewCellViewModel {
     public var isChild: Bool {
         !_task.parentId.isEmpty
     }
+
+    public var isShowedSubTasks: Bool {
+        _task.isShowedSubTask
+    }
+
+    public var hasSubTasks: Bool {
+        subTasks.count > 0
+    }
 }
 
 extension TaskTableViewCellViewModel: IdentifiableType, Equatable {

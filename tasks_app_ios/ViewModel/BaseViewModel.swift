@@ -32,6 +32,10 @@ class BaseViewModel {
         _dataSource.updateTask(viewModel: viewModel, beforeId: beforeId)
     }
 
+    public func insertTask(viewModels: [TaskTableViewCellViewModel], index: Int) {
+        _dataSource.insertTask(viewModels: viewModels, index: index)
+    }
+
     public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
         _dataSource.moveTask(fromViewModel: fromViewModel, toIndex: toIndex)
     }

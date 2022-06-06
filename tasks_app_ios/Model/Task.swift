@@ -14,14 +14,16 @@ class Task: Codable {
     private let _isChecked: Bool
     private let _parentId: String
     private let _subTasks: [Task]
+    private let _isShowedSubTask: Bool
 
-    init(id: String = "", title: String, notes: String, isChecked: Bool, parentId: String = "", subTasks: [Task] = []) {
+    init(id: String = "", title: String, notes: String, isChecked: Bool, parentId: String = "", subTasks: [Task] = [], isShowedSubTask: Bool = false) {
         _id = id.isEmpty ? UUID().uuidString : id
         _title = title
         _notes = notes
         _isChecked = isChecked
         _parentId = parentId
         _subTasks = subTasks
+        _isShowedSubTask = isShowedSubTask
     }
 
     public var id: String {
@@ -46,5 +48,9 @@ class Task: Codable {
 
     public var subTasks: [Task] {
         _subTasks
+    }
+
+    public var isShowedSubTask: Bool {
+        _isShowedSubTask
     }
 }

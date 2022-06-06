@@ -451,6 +451,7 @@ struct _R: Rswift.Validatable {
       }
 
       static func validate() throws {
+        if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "chevron.forward") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'chevron.forward' is used in nib 'TaskTableViewCell', but couldn't be loaded.") } }
         if #available(iOS 13.0, *) { if UIKit.UIImage(systemName: "info.circle") == nil { throw Rswift.ValidationError(description: "[R.swift] System image named 'info.circle' is used in nib 'TaskTableViewCell', but couldn't be loaded.") } }
         if #available(iOS 11.0, tvOS 11.0, *) {
           if UIKit.UIColor(named: "actionPink", in: R.hostingBundle, compatibleWith: nil) == nil { throw Rswift.ValidationError(description: "[R.swift] Color named 'actionPink' is used in nib 'TaskTableViewCell', but couldn't be loaded.") }

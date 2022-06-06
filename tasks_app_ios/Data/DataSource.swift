@@ -53,6 +53,15 @@ class DataSource {
         save(taskTableViewSectionViewModel: section)
     }
 
+    public func insertTask(viewModels: [TaskTableViewCellViewModel], index: Int) {
+        var section = _taskTableViewSectionViewModels.value.last!
+        if index < 0 || section.items.endIndex < index {
+            fatalError("index of out of range: \(index)")
+        }
+        section.items.insert(contentsOf: viewModels, at: index)
+        save(taskTableViewSectionViewModel: section)
+    }
+
     public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         if let index = section.items.firstIndex(where: { $0.id == fromViewModel.id }) {
