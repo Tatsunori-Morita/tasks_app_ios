@@ -81,6 +81,7 @@
                 <outlet property="iconBaseView" destination="OcT-2c-cZw" id="F98-Rj-ncp"/>
                 <outlet property="iconView" destination="yeP-tX-g5t" id="P8h-zM-Vbu"/>
                 <outlet property="infoButton" destination="MlS-9E-AAN" id="bVD-8z-cim"/>
+                <outlet property="stackViewLeftConstraint" destination="r8k-h6-CIB" id="dwu-ly-Xcw"/>
                 <outlet property="subTasksButton" destination="N0k-aS-u8t" id="8Ea-a2-dN0"/>
                 <outlet property="textView" destination="Lbz-4l-I7j" id="l7P-sU-WwC"/>
             </connections>

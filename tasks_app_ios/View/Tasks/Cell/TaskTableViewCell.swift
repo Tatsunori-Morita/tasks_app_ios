@@ -13,6 +13,7 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var infoButton: UIButton!
     @IBOutlet weak var subTasksButton: UIButton!
+    @IBOutlet weak var stackViewLeftConstraint: NSLayoutConstraint!
 
     public static let identifier = String(describing: TaskTableViewCell.self)
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
@@ -51,6 +52,7 @@ class TaskTableViewCell: UITableViewCell {
     }
 
     private func initializeLayout() {
+        stackViewLeftConstraint.constant = 14
         iconView.layer.borderColor = R.color.checkIconBorder()?.cgColor
         iconView.layer.borderWidth = 1
         iconView.layer.cornerRadius = iconView.frame.width / 2
@@ -77,9 +79,15 @@ class TaskTableViewCell: UITableViewCell {
             textView.attributedText = attr
         }
 
-        subTasksButton.isHidden = !viewModel.hasSubTasks
-        if viewModel.isShowedSubTasks {
-            subTasksButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        if viewModel.hasSubTasks {
+            subTasksButton.isHidden = false
+            if viewModel.isShowedSubTasks {
+                subTasksButton.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            }
+        }
+
+        if viewModel.isChild {
+            stackViewLeftConstraint.constant = 50
         }
     }
 
