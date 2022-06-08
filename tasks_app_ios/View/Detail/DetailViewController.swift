@@ -64,12 +64,12 @@ class DetailViewController: UIViewController {
         doneBarButton.tintColor = R.color.actionBlue()
         doneBarButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
             IQKeyboardManager.shared.resignFirstResponder()
-            let children = owner.detailViewModel.detailTableViewCellViewModelArray.map { return $0.task }
-            let task = Task(title: owner.titleTextView.text,
-                            notes: owner.notesTextView.text,
-                            isChecked: owner.detailViewModel.isChecked,
-                            subTasks: children)
-            let newViewModel = TaskTableViewCellViewModel(task: task)
+            let subTasks = owner.detailViewModel.detailTableViewCellViewModelArray.map { return $0.task }
+            let oldTask = owner.detailViewModel.task
+            let newViewModel = TaskTableViewCellViewModel(
+                task: oldTask.changeValues(
+                    title: owner.titleTextView.text, notes: owner.notesTextView.text,
+                    isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks))
             owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
             owner.dismiss(animated: true)
         }).disposed(by: disposeBag)
@@ -99,11 +99,10 @@ class DetailViewController: UIViewController {
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
-            let task = Task(title: "", notes: "", isChecked: false)
+            let task = Task(id: "", title: "", notes: "", isChecked: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.detailViewModel.getDetailTableViewCellViewModel(index: indexPath.row)
-            owner.detailViewModel.updateSubTask(
-                viewModel: newViewModel, beforeId: oldViewModel.id)
+            owner.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: oldViewModel.id)
             self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
         }).disposed(by: disposeBag)
 
@@ -143,17 +142,22 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
 
             cell.textEditingDidEnd = { [weak self] newText, viewModel in
                 guard let self = self else { return }
-                let task = Task(title: newText, notes: viewModel.notes, isChecked: viewModel.isChecked, parentId: viewModel.id)
-                let newViewModel = TaskTableViewCellViewModel(task: task)
+                let oldTask = viewModel.task
+                let newViewModel = TaskTableViewCellViewModel(
+                    task: oldTask.changeValues(
+                        title: newText, notes: oldTask.notes,
+                        isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
                 self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
             }
 
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
-                let task = Task(title: viewModel.title, notes: viewModel.notes,
-                                isChecked: !viewModel.isChecked, parentId: viewModel.id)
-                let newViewModel = TaskTableViewCellViewModel(task: task)
+                let oldTask = viewModel.task
+                let newViewModel = TaskTableViewCellViewModel(
+                    task: oldTask.changeValues(
+                        title: oldTask.title, notes: oldTask.notes,
+                        isChecked: !viewModel.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
             return cell

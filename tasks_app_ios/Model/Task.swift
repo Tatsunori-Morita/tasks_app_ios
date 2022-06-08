@@ -16,8 +16,9 @@ class Task: Codable {
     private let _subTasks: [Task]
     private let _isShowedSubTask: Bool
 
-    init(id: String = "", title: String, notes: String, isChecked: Bool, parentId: String = "", subTasks: [Task] = [], isShowedSubTask: Bool = false) {
-        _id = id.isEmpty ? UUID().uuidString : id
+    init(id: String, title: String, notes: String, isChecked: Bool,
+         parentId: String = "", subTasks: [Task] = [], isShowedSubTask: Bool = false) {
+        _id = id
         _title = title
         _notes = notes
         _isChecked = isChecked
@@ -52,5 +53,18 @@ class Task: Codable {
 
     public var isShowedSubTask: Bool {
         _isShowedSubTask
+    }
+
+    public func changeValues(title: String, notes: String, isChecked: Bool, isShowedSubTasks: Bool, subTasks: [Task] = []) -> Task {
+        let newParentId = UUID().uuidString
+        let oldSubTasks = subTasks.isEmpty ? _subTasks : subTasks
+        let newSubTasks = oldSubTasks.map { task in
+            return Task(id: task.id, title: task.title, notes: task.notes,
+                        isChecked: task.isChecked, parentId: newParentId,
+                        subTasks: task.subTasks, isShowedSubTask: task.isShowedSubTask)
+        }
+        return Task(id: newParentId, title: title, notes: notes,
+                    isChecked: isChecked, parentId: _parentId,
+                    subTasks: newSubTasks, isShowedSubTask: isShowedSubTasks)
     }
 }

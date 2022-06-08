@@ -36,7 +36,7 @@ class DataSource {
     public func addTaskCell() {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(title: "", notes: "", isChecked: false),
+            task: Task(id: UUID().uuidString, title: "", notes: "", isChecked: false),
             isNewTask: true))
         _taskTableViewSectionViewModels.accept([section])
     }
@@ -46,6 +46,23 @@ class DataSource {
         if let index = section.items.firstIndex(where: { $0.id == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
+
+            if viewModel.isChild {
+                if let parentIndex = section.items.firstIndex(where: { $0.id == viewModel.parentId}) {
+                    let parentViewModel = section.items[parentIndex]
+                    let subTasksViewModels = section.items.filter { $0.parentId == parentViewModel.id }
+                    let subTasks = subTasksViewModels.map { $0.task }
+                    let oldTask = parentViewModel.task
+                    let newParentTask = oldTask.changeValues(title: oldTask.title, notes: oldTask.notes, isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
+                    section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
+
+                    if let subTaskIndex = newParentTask.subTasks.firstIndex(where: { $0.id == beforeId }) {
+                        let oldSubTask = newParentTask.subTasks[subTaskIndex]
+                        let newSubTask = Task(id: oldSubTask.id, title: viewModel.title, notes: viewModel.notes, isChecked: viewModel.isChecked, parentId: oldSubTask.parentId, subTasks: viewModel.subTasks, isShowedSubTask: viewModel.isShowedSubTasks)
+                        section.items[index] = TaskTableViewCellViewModel(task: newSubTask)
+                    }
+                }
+            }
         } else {
             // Add new task.
             section.items.append(viewModel)
