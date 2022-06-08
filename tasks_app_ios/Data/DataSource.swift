@@ -53,21 +53,35 @@ class DataSource {
                     let subTasksViewModels = section.items.filter { $0.parentId == parentViewModel.id }
                     let subTasks = subTasksViewModels.map { $0.task }
                     let oldTask = parentViewModel.task
-                    let newParentTask = oldTask.changeValues(title: oldTask.title, notes: oldTask.notes, isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
+                    let newParentTask = oldTask.changeValues(
+                        title: oldTask.title, notes: oldTask.notes,
+                        isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
                     section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
 
                     if let subTaskIndex = newParentTask.subTasks.firstIndex(where: { $0.id == beforeId }) {
                         let oldSubTask = newParentTask.subTasks[subTaskIndex]
-                        let newSubTask = Task(id: oldSubTask.id, title: viewModel.title, notes: viewModel.notes, isChecked: viewModel.isChecked, parentId: oldSubTask.parentId, subTasks: viewModel.subTasks, isShowedSubTask: viewModel.isShowedSubTasks)
+                        let newSubTask = Task(id: oldSubTask.id, title: viewModel.title,
+                                              notes: viewModel.notes, isChecked: viewModel.isChecked,
+                                              parentId: oldSubTask.parentId, subTasks: viewModel.subTasks,
+                                              isShowedSubTask: viewModel.isShowedSubTasks)
                         section.items[index] = TaskTableViewCellViewModel(task: newSubTask)
                     }
                 }
+            } else {
+                if viewModel.isShowedSubTasks {
+                    viewModel.subTasks.forEach { subTask in
+                        if let subTaskIndex = section.items.firstIndex(where: { $0.id == subTask.id }) {
+                            let newSubTask = Task(id: subTask.id, title: subTask.title,
+                                                  notes: subTask.notes, isChecked: subTask.isChecked,
+                                                  parentId: viewModel.id, subTasks: subTask.subTasks,
+                                                  isShowedSubTask: subTask.isShowedSubTask)
+                            section.items[subTaskIndex] = TaskTableViewCellViewModel(task: newSubTask)
+                        }
+                    }
+                }
             }
-        } else {
-            // Add new task.
-            section.items.append(viewModel)
+            save(taskTableViewSectionViewModel: section)
         }
-        save(taskTableViewSectionViewModel: section)
     }
 
     public func insertTask(viewModels: [TaskTableViewCellViewModel], index: Int) {
@@ -105,6 +119,7 @@ class DataSource {
     }
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
+        printLog(data: taskTableViewSectionViewModel.items)
         var section = taskTableViewSectionViewModel
         section.items = section.items.filter { !$0.title.isEmpty }
         _taskTableViewSectionViewModels.accept([section])
@@ -121,6 +136,12 @@ class DataSource {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(taskModels){
             UserDefaults.standard.set(encoded, forKey: userDefaultsName)
+        }
+    }
+
+    private func printLog(data: [TaskTableViewCellViewModel]) {
+        data.forEach { viewModel in
+            viewModel.task.toString()
         }
     }
 }

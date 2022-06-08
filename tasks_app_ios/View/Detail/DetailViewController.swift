@@ -154,10 +154,10 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
             cell.tappedCheckMark = { [weak self] viewModel in
                 guard let self = self else { return }
                 let oldTask = viewModel.task
-                let newViewModel = TaskTableViewCellViewModel(
-                    task: oldTask.changeValues(
-                        title: oldTask.title, notes: oldTask.notes,
-                        isChecked: !viewModel.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
+                let newViewModel = TaskTableViewCellViewModel(task: Task(
+                    id: oldTask.id, title: oldTask.title, notes: oldTask.notes,
+                    isChecked: !oldTask.isChecked, parentId: oldTask.parentId,
+                    subTasks: oldTask.subTasks, isShowedSubTask: oldTask.isShowedSubTask))
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
             }
             return cell

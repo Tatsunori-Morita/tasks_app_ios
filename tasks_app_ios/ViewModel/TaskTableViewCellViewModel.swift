@@ -63,7 +63,7 @@ class TaskTableViewCellViewModel {
 
 extension TaskTableViewCellViewModel: IdentifiableType, Equatable {
     public var identity: String {
-        return self._task.id
+        return UUID().uuidString
     }
 
     static func == (lhs: TaskTableViewCellViewModel, rhs: TaskTableViewCellViewModel) -> Bool {

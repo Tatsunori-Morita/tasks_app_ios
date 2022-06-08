@@ -67,4 +67,14 @@ class Task: Codable {
                     isChecked: isChecked, parentId: _parentId,
                     subTasks: newSubTasks, isShowedSubTask: isShowedSubTasks)
     }
+
+    public func toString() {
+        print("----------------------- Parent Task ----------------------------")
+        print("id:\(_id) title:\(_title) notes:\(_notes) isChecked:\(_isChecked) parentId:\(_parentId) isShowedSubTask:\(_isShowedSubTask)")
+        print("----------------------- Sub Task ----------------------------")
+        _subTasks.forEach { task in
+            print("id:\(task.id) title:\(task.title) notes:\(task.notes) isChecked:\(task.isChecked) parentId:\(task.parentId) isShowedSubTask:\(task.isShowedSubTask)")
+        }
+        print("-------------------------------------------------------------")
+    }
 }

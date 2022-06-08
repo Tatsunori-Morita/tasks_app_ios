@@ -98,8 +98,16 @@ class DetailViewModel: BaseViewModel {
     }
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
+        printLog(data: taskTableViewSectionViewModel.items)
         var section = taskTableViewSectionViewModel
         section.items = section.items.filter { !$0.title.isEmpty }
         _detailTableViewSectionViewModels.accept([section])
+    }
+
+    private func printLog(data: [TaskTableViewCellViewModel]) {
+        print("=============== detail view ===================")
+        data.forEach { viewModel in
+            viewModel.task.toString()
+        }
     }
 }
