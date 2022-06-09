@@ -8,10 +8,12 @@
 import RxDataSources
 
 class TaskTableViewCellViewModel {
+    private let _id: String
     private let _task: Task
     private let _isNewTask: Bool
 
-    init(task: Task, isNewTask: Bool = false) {
+    init(id: String = UUID().uuidString, task: Task, isNewTask: Bool = false) {
+        _id = id
         _task = task
         _isNewTask = isNewTask
     }
@@ -59,11 +61,15 @@ class TaskTableViewCellViewModel {
     public var hasSubTasks: Bool {
         subTasks.count > 0
     }
+
+    public func changeValues(task: Task) -> TaskTableViewCellViewModel {
+        return TaskTableViewCellViewModel(id: _id, task: task)
+    }
 }
 
 extension TaskTableViewCellViewModel: IdentifiableType, Equatable {
     public var identity: String {
-        return UUID().uuidString
+        return _id
     }
 
     static func == (lhs: TaskTableViewCellViewModel, rhs: TaskTableViewCellViewModel) -> Bool {

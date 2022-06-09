@@ -48,9 +48,11 @@ class TasksViewController: UIViewController {
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
-            let task = Task(id: UUID().uuidString, title: "", notes: "", isChecked: false)
-            let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
+            let newTask = oldViewModel.task.changeValues(
+                title: "", notes: oldViewModel.notes, isChecked: oldViewModel.isChecked,
+                isShowedSubTasks: oldViewModel.isShowedSubTasks, subTasks: oldViewModel.subTasks)
+            let newViewModel = TaskTableViewCellViewModel(task: newTask, isNewTask: true)
             owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: oldViewModel.id)
         }).disposed(by: disposeBag)
 
@@ -143,13 +145,14 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
             cell.tappedSubTasksButton = { [unowned self] viewModel in
                 IQKeyboardManager.shared.resignFirstResponder()
                 if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
-                    let isShowedSubTasks = !viewModel.isShowedSubTasks
-                    let oldTask = viewModel.task
+                    let oldViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
+                    let isShowedSubTasks = !oldViewModel.isShowedSubTasks
+                    let oldTask = oldViewModel.task
                     let newViewModel = TaskTableViewCellViewModel(
                         task: oldTask.changeValues(
                             title: oldTask.title, notes: oldTask.notes,
                             isChecked: oldTask.isChecked, isShowedSubTasks: isShowedSubTasks))
-                    self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
+                    self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: oldViewModel.id)
 
                     if isShowedSubTasks {
                         let insertedIndex = index + 1
@@ -158,7 +161,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                         }
                         tasksViewModel.insertTask(viewModels: subTaskViewModels, index: insertedIndex)
                     } else {
-                        viewModel.subTasks.forEach { subTask in
+                        oldViewModel.subTasks.forEach { subTask in
                             let subTaskViewModel = TaskTableViewCellViewModel(task: Task(id: subTask.id, title: "", notes: "", isChecked: false, parentId: "", subTasks: [], isShowedSubTask: false))
                             tasksViewModel.updateTask(viewModel: subTaskViewModel, beforeId: subTask.id)
                         }

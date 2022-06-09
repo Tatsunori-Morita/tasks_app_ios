@@ -50,32 +50,31 @@ class DataSource {
             if viewModel.isChild {
                 if let parentIndex = section.items.firstIndex(where: { $0.id == viewModel.parentId}) {
                     let parentViewModel = section.items[parentIndex]
-                    let subTasksViewModels = section.items.filter { $0.parentId == parentViewModel.id }
-                    let subTasks = subTasksViewModels.map { $0.task }
-                    let oldTask = parentViewModel.task
-                    let newParentTask = oldTask.changeValues(
-                        title: oldTask.title, notes: oldTask.notes,
-                        isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
-                    section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
+                    if viewModel.title.isEmpty {
+                        // Delete.
+                        let newSubTasks = parentViewModel.subTasks.filter { $0.id != beforeId }
+                        let oldTask = parentViewModel.task
+                        let newParentTask = oldTask.changeValues(
+                            title: oldTask.title, notes: oldTask.notes,
+                            isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: newSubTasks)
+                        section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
+                    } else {
+                        // Update.
+                        let subTasksViewModels = section.items.filter { $0.parentId == parentViewModel.id }
+                        let subTasks = subTasksViewModels.map { $0.task }
+                        let oldTask = parentViewModel.task
+                        let newParentTask = oldTask.changeValues(
+                            title: oldTask.title, notes: oldTask.notes,
+                            isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
+                        section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
 
-                    if let subTaskIndex = newParentTask.subTasks.firstIndex(where: { $0.id == beforeId }) {
-                        let oldSubTask = newParentTask.subTasks[subTaskIndex]
-                        let newSubTask = Task(id: oldSubTask.id, title: viewModel.title,
-                                              notes: viewModel.notes, isChecked: viewModel.isChecked,
-                                              parentId: oldSubTask.parentId, subTasks: viewModel.subTasks,
-                                              isShowedSubTask: viewModel.isShowedSubTasks)
-                        section.items[index] = TaskTableViewCellViewModel(task: newSubTask)
-                    }
-                }
-            } else {
-                if viewModel.isShowedSubTasks {
-                    viewModel.subTasks.forEach { subTask in
-                        if let subTaskIndex = section.items.firstIndex(where: { $0.id == subTask.id }) {
-                            let newSubTask = Task(id: subTask.id, title: subTask.title,
-                                                  notes: subTask.notes, isChecked: subTask.isChecked,
-                                                  parentId: viewModel.id, subTasks: subTask.subTasks,
-                                                  isShowedSubTask: subTask.isShowedSubTask)
-                            section.items[subTaskIndex] = TaskTableViewCellViewModel(task: newSubTask)
+                        if let subTaskIndex = newParentTask.subTasks.firstIndex(where: { $0.id == beforeId }) {
+                            let oldSubTask = newParentTask.subTasks[subTaskIndex]
+                            let newSubTask = Task(id: oldSubTask.id, title: viewModel.title,
+                                                  notes: viewModel.notes, isChecked: viewModel.isChecked,
+                                                  parentId: oldSubTask.parentId, subTasks: viewModel.subTasks,
+                                                  isShowedSubTask: viewModel.isShowedSubTasks)
+                            section.items[index] = TaskTableViewCellViewModel(task: newSubTask)
                         }
                     }
                 }
