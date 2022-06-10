@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-class DataSource {
+final class DataSource {
     public static let shared = DataSource()
 
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
@@ -49,8 +49,8 @@ class DataSource {
                 if let subTaskIndex = section.items.firstIndex(where: { $0.id == subTask.id }) {
                     section.items.remove(at: subTaskIndex)
                 }
-                _taskTableViewSectionViewModels.accept([section])
             }
+            _taskTableViewSectionViewModels.accept([section])
         }
     }
 

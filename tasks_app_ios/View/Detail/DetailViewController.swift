@@ -75,11 +75,10 @@ class DetailViewController: UIViewController {
                 owner.detailViewModel.removeSubTasks(parentId: owner.detailViewModel.id)
 
                 if let index = owner.detailViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == newViewModel.id }) {
-                    let insertedIndex = index + 1
                     let subTaskViewModels = newViewModel.subTasks.map { subTask in
                         return TaskTableViewCellViewModel(task: subTask)
                     }
-                    owner.detailViewModel.insertTask(viewModels: subTaskViewModels, index: insertedIndex)
+                    owner.detailViewModel.insertTask(viewModels: subTaskViewModels, index: index + 1)
                 }
             }
 
@@ -148,31 +147,34 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
             let cell = tableView.dequeueReusableCell(withIdentifier: DetailTableViewCell.identifier, for: indexPath) as! DetailTableViewCell
             cell.configure(viewModel: viewModel)
 
-            cell.lineHeightChanged = {
+            cell.textView.rx.didChange.asDriver().drive(with: self, onNext: { owner, _ in
                 tableView.beginUpdates()
                 tableView.endUpdates()
-            }
+            }).disposed(by: cell.disposeBag)
 
-            cell.textEditingDidEnd = { [weak self] newText, viewModel in
-                guard let self = self else { return }
-                let oldTask = viewModel.task
-                let newViewModel = TaskTableViewCellViewModel(
-                    task: oldTask.changeValues(
-                        title: newText, notes: oldTask.notes,
-                        isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
-                self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
-                self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
-            }
+            cell.textView.rx.didEndEditing
+                .map { cell.textView.text }
+                .filter { $0 != nil }
+                .map { $0! }
+                .subscribe(onNext: { newText in
+                    let oldTask = viewModel.task
+                    let newViewModel = TaskTableViewCellViewModel(
+                        task: oldTask.changeValues(
+                            title: newText, notes: oldTask.notes,
+                            isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
+                    self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
+                    self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
+                }).disposed(by: cell.disposeBag)
 
-            cell.tappedCheckMark = { [weak self] viewModel in
-                guard let self = self else { return }
+            cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
+                IQKeyboardManager.shared.resignFirstResponder()
                 let oldTask = viewModel.task
                 let newViewModel = TaskTableViewCellViewModel(task: Task(
                     id: oldTask.id, title: oldTask.title, notes: oldTask.notes,
                     isChecked: !oldTask.isChecked, parentId: oldTask.parentId,
                     subTasks: oldTask.subTasks, isShowedSubTask: oldTask.isShowedSubTask))
                 self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
-            }
+            }).disposed(by: cell.disposeBag)
             return cell
         }, titleForHeaderInSection: { dataSource, index in
             return dataSource.sectionModels[index].header

@@ -102,49 +102,56 @@ extension TasksViewController {
 
 extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
-        return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { dataSource, tableView, indexPath, viewModel in
+        return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { [self] dataSource, tableView, indexPath, viewModel in
             let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
             cell.configure(viewModel: viewModel)
 
-            cell.lineHeightChanged = {
+            cell.textView.rx.didChange.asDriver().drive(with: self, onNext: { owner, _ in
                 tableView.beginUpdates()
                 tableView.endUpdates()
-            }
+            }).disposed(by: cell.disposeBag)
 
-            cell.textEditingDidEnd = { [unowned self] newText, viewModel in
-                let oldTask = viewModel.task
-                let newViewModel = TaskTableViewCellViewModel(
-                    task: oldTask.changeValues(
-                        title: newText, notes: oldTask.notes,
-                        isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
-                self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
-            }
+            cell.textView.rx.didBeginEditing.asDriver().drive(with: self, onNext: { owner, _ in 
+                cell.infoButton.isHidden = viewModel.isChild
+                cell.subTasksButton.isHidden = true
+            }).disposed(by: cell.disposeBag)
 
-            cell.tappedCheckMark = { [unowned self] viewModel in
-                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
-                    let oldTask = self.tasksViewModel.getTaskTableViewCellViewModel(index: index).task
+            cell.textView.rx.didEndEditing
+                .map { cell.textView.text }
+                .filter { $0 != nil }
+                .map { $0! }
+                .subscribe(onNext: { newText in
+                    cell.infoButton.isHidden = true
+                    let oldTask = viewModel.task
                     let newViewModel = TaskTableViewCellViewModel(
                         task: oldTask.changeValues(
-                            title: oldTask.title, notes: oldTask.notes,
-                            isChecked: !oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
+                            title: newText, notes: oldTask.notes,
+                            isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
                     self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
-                }
-            }
+                }).disposed(by: cell.disposeBag)
 
-            cell.tappedInfoButton = { [unowned self] viewModel in
-                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
-                    IQKeyboardManager.shared.resignFirstResponder()
-                    let textEditingDidEndViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
-                    let nav = UINavigationController(
-                        rootViewController: DetailViewController.createInstance(
-                            viewModel: DetailViewModel(task: textEditingDidEndViewModel.task)))
-                    self.present(nav, animated: true)
-                }
-            }
-
-            cell.tappedSubTasksButton = { [unowned self] viewModel in
+            cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
-                if let index = tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
+                let oldTask = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.id).task
+                let newViewModel = TaskTableViewCellViewModel(
+                    task: oldTask.changeValues(
+                        title: oldTask.title, notes: oldTask.notes,
+                        isChecked: !oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
+                owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.id)
+            }).disposed(by: cell.disposeBag)
+
+            cell.infoButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+                IQKeyboardManager.shared.resignFirstResponder()
+                let textEditingDidEndViewModel = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.id)
+                let nav = UINavigationController(
+                    rootViewController: DetailViewController.createInstance(
+                        viewModel: DetailViewModel(task: textEditingDidEndViewModel.task)))
+                owner.present(nav, animated: true)
+            }).disposed(by: cell.disposeBag)
+
+            cell.subTasksButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+                IQKeyboardManager.shared.resignFirstResponder()
+                if let index = owner.tasksViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == viewModel.id}) {
                     let oldViewModel = self.tasksViewModel.getTaskTableViewCellViewModel(index: index)
                     let isShowedSubTasks = !oldViewModel.isShowedSubTasks
                     let oldTask = oldViewModel.task
@@ -155,19 +162,15 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                     self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: oldViewModel.id)
 
                     if isShowedSubTasks {
-                        let insertedIndex = index + 1
                         let subTaskViewModels = newViewModel.subTasks.map { subTask in
                             return TaskTableViewCellViewModel(task: subTask)
                         }
-                        tasksViewModel.insertTask(viewModels: subTaskViewModels, index: insertedIndex)
+                        owner.tasksViewModel.insertTask(viewModels: subTaskViewModels, index: index + 1)
                     } else {
-                        oldViewModel.subTasks.forEach { subTask in
-                            let subTaskViewModel = TaskTableViewCellViewModel(task: Task(id: subTask.id, title: "", notes: "", isChecked: false, parentId: "", subTasks: [], isShowedSubTask: false))
-                            tasksViewModel.updateTask(viewModel: subTaskViewModel, beforeId: subTask.id)
-                        }
+                        owner.tasksViewModel.removeSubTasks(parentId: viewModel.id)
                     }
                 }
-            }
+            }).disposed(by: cell.disposeBag)
             return cell
         }, titleForHeaderInSection: { dataSource, index in
             return dataSource.sectionModels[index].header

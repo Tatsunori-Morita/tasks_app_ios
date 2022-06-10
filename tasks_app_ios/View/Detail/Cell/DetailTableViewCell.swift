@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class DetailTableViewCell: UITableViewCell {
     @IBOutlet weak var iconBaseView: UIView!
@@ -14,8 +15,8 @@ class DetailTableViewCell: UITableViewCell {
 
     public static let identifier = String(describing: DetailTableViewCell.self)
     public var textEditingDidEnd: ((_ text: String, _ viewModel: TaskTableViewCellViewModel) -> Void)?
-    public var lineHeightChanged: (() -> Void)?
-    public var tappedCheckMark: ((_ viewModel: TaskTableViewCellViewModel) -> Void)?
+    public let tappedCheckMark = UITapGestureRecognizer()
+    public var disposeBag = DisposeBag()
 
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
@@ -34,14 +35,18 @@ class DetailTableViewCell: UITableViewCell {
         initialize()
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
+
     private func initialize() {
         initializeLayout()
         selectionStyle = .none
         iconView.isUserInteractionEnabled = false
         textView.returnKeyType = .done
         textView.delegate = self
-        iconBaseView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(_tappedCheckMark(_:))))
+        iconBaseView.addGestureRecognizer(tappedCheckMark)
     }
 
     private func initializeLayout() {
@@ -68,28 +73,14 @@ class DetailTableViewCell: UITableViewCell {
             textView.attributedText = attr
         }
     }
-
-    @objc private func _tappedCheckMark(_ sender: UITapGestureRecognizer) {
-        guard let viewModel = taskTableViewCellViewModel else { return }
-        tappedCheckMark?(viewModel)
-    }
 }
 
 extension DetailTableViewCell: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        lineHeightChanged?()
-    }
-
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             textView.resignFirstResponder()
             return false
         }
         return true
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        guard let viewModel = taskTableViewCellViewModel else { return }
-        textEditingDidEnd?(textView.text, viewModel)
     }
 }
