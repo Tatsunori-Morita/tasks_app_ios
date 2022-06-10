@@ -77,6 +77,10 @@ class DetailViewModel: BaseViewModel {
         }
     }
 
+    public func removeSubTasks(parentId: String) {
+        _dataSource.removeSubTasks(parentId: parentId)
+    }
+
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(

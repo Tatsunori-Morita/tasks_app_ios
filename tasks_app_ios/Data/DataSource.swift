@@ -41,6 +41,19 @@ class DataSource {
         _taskTableViewSectionViewModels.accept([section])
     }
 
+    public func removeSubTasks(parentId: String) {
+        guard var section = _taskTableViewSectionViewModels.value.last else { return }
+        if let parentIndex = section.items.firstIndex(where: { $0.id == parentId}) {
+            let parentViewModel = section.items[parentIndex]
+            parentViewModel.subTasks.forEach { subTask in
+                if let subTaskIndex = section.items.firstIndex(where: { $0.id == subTask.id }) {
+                    section.items.remove(at: subTaskIndex)
+                }
+                _taskTableViewSectionViewModels.accept([section])
+            }
+        }
+    }
+
     public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         if let index = section.items.firstIndex(where: { $0.id == beforeId }) {

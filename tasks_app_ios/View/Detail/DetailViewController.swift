@@ -70,6 +70,19 @@ class DetailViewController: UIViewController {
                 task: oldTask.changeValues(
                     title: owner.titleTextView.text, notes: owner.notesTextView.text,
                     isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks))
+
+            if newViewModel.isShowedSubTasks {
+                owner.detailViewModel.removeSubTasks(parentId: owner.detailViewModel.id)
+
+                if let index = owner.detailViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == newViewModel.id }) {
+                    let insertedIndex = index + 1
+                    let subTaskViewModels = newViewModel.subTasks.map { subTask in
+                        return TaskTableViewCellViewModel(task: subTask)
+                    }
+                    owner.detailViewModel.insertTask(viewModels: subTaskViewModels, index: insertedIndex)
+                }
+            }
+
             owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
             owner.dismiss(animated: true)
         }).disposed(by: disposeBag)
