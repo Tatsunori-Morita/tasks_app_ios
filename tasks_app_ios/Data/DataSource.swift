@@ -72,7 +72,7 @@ final class DataSource {
                             isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: newSubTasks)
                         section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
                     } else {
-                        // Update.
+                        // Update parent task.
                         let subTasksViewModels = section.items.filter { $0.parentId == parentViewModel.id }
                         let subTasks = subTasksViewModels.map { $0.task }
                         let oldTask = parentViewModel.task
@@ -80,15 +80,6 @@ final class DataSource {
                             title: oldTask.title, notes: oldTask.notes,
                             isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks)
                         section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
-
-                        if let subTaskIndex = newParentTask.subTasks.firstIndex(where: { $0.id == beforeId }) {
-                            let oldSubTask = newParentTask.subTasks[subTaskIndex]
-                            let newSubTask = Task(id: oldSubTask.id, title: viewModel.title,
-                                                  notes: viewModel.notes, isChecked: viewModel.isChecked,
-                                                  parentId: oldSubTask.parentId, subTasks: viewModel.subTasks,
-                                                  isShowedSubTask: viewModel.isShowedSubTasks)
-                            section.items[index] = TaskTableViewCellViewModel(task: newSubTask)
-                        }
                     }
                 }
             }
