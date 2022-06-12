@@ -66,23 +66,26 @@ class DetailViewController: UIViewController {
             IQKeyboardManager.shared.resignFirstResponder()
             let subTasks = owner.detailViewModel.detailTableViewCellViewModelArray.map { return $0.task }
             let oldTask = owner.detailViewModel.task
-            let newViewModel = TaskTableViewCellViewModel(
-                task: oldTask.changeValues(
-                    title: owner.titleTextView.text, notes: owner.notesTextView.text,
-                    isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: oldTask.isShowedSubTask, subTasks: subTasks))
+            let hasSubtasks = subTasks.count > 0
 
-            if newViewModel.isShowedSubTasks {
-                owner.detailViewModel.removeSubTasks(parentId: owner.detailViewModel.id)
-
-                if let index = owner.detailViewModel.taskTableViewCellViewModelArray.firstIndex(where: { $0.id == newViewModel.id }) {
-                    let subTaskViewModels = newViewModel.subTasks.map { subTask in
-                        return TaskTableViewCellViewModel(task: subTask)
-                    }
-                    owner.detailViewModel.insertTask(viewModels: subTaskViewModels, index: index + 1)
-                }
+            if owner.detailViewModel.task.isShowedSubTask {
+                let newViewModel = TaskTableViewCellViewModel(
+                    task: oldTask.changeValues(
+                        title: owner.titleTextView.text, notes: owner.notesTextView.text,
+                        isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: true,
+                        hasSubTasks: hasSubtasks, subTasks: subTasks))
+                owner.detailViewModel.closedSubTasks(newParentViewModel: newViewModel)
+                owner.detailViewModel.openedSubTasks(newParentViewModel: newViewModel)
+            } else {
+                let newViewModel = TaskTableViewCellViewModel(
+                    task: oldTask.changeValues(
+                        title: owner.titleTextView.text, notes: owner.notesTextView.text,
+                        isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: false,
+                        hasSubTasks: hasSubtasks, subTasks: subTasks))
+                owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
             }
 
-            owner.detailViewModel.updateTask(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
+
             owner.dismiss(animated: true)
         }).disposed(by: disposeBag)
 
@@ -111,10 +114,10 @@ class DetailViewController: UIViewController {
 
         // Delete cell.
         tableView.rx.itemDeleted.asDriver().drive(with: self, onNext: { owner, indexPath in
-            let task = Task(id: "", title: "", notes: "", isChecked: false)
+            let task = Task(id: "", title: "", notes: "", isChecked: false, hasSubTasks: false)
             let newViewModel = TaskTableViewCellViewModel(task: task, isNewTask: true)
             let oldViewModel = owner.detailViewModel.getDetailTableViewCellViewModel(index: indexPath.row)
-            owner.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: oldViewModel.id)
+            owner.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: oldViewModel.taskId)
             self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
         }).disposed(by: disposeBag)
 
@@ -160,9 +163,9 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
                     let oldTask = viewModel.task
                     let newViewModel = TaskTableViewCellViewModel(
                         task: oldTask.changeValues(
-                            title: newText, notes: oldTask.notes,
-                            isChecked: oldTask.isChecked, isShowedSubTasks: oldTask.isShowedSubTask))
-                    self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
+                            title: newText, notes: oldTask.notes, isChecked: oldTask.isChecked,
+                            isShowedSubTasks: oldTask.isShowedSubTask, hasSubTasks: oldTask.hasSubTasks))
+                    self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.taskId)
                     self.tableViewConstraintHeight?.constant = self.tableView.contentSize.height
                 }).disposed(by: cell.disposeBag)
 
@@ -172,8 +175,8 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
                 let newViewModel = TaskTableViewCellViewModel(task: Task(
                     id: oldTask.id, title: oldTask.title, notes: oldTask.notes,
                     isChecked: !oldTask.isChecked, parentId: oldTask.parentId,
-                    subTasks: oldTask.subTasks, isShowedSubTask: oldTask.isShowedSubTask))
-                self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.id)
+                    subTasks: oldTask.subTasks, hasSubTasks: oldTask.hasSubTasks, isShowedSubTask: oldTask.isShowedSubTask))
+                self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.taskId)
             }).disposed(by: cell.disposeBag)
             return cell
         }, titleForHeaderInSection: { dataSource, index in

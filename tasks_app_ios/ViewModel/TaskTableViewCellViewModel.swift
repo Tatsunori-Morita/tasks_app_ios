@@ -18,7 +18,7 @@ class TaskTableViewCellViewModel {
         _isNewTask = isNewTask
     }
 
-    public var id: String {
+    public var taskId: String {
         _task.id
     }
 
@@ -59,7 +59,7 @@ class TaskTableViewCellViewModel {
     }
 
     public var hasSubTasks: Bool {
-        subTasks.count > 0
+        _task.hasSubTasks
     }
 
     public func changeValues(task: Task) -> TaskTableViewCellViewModel {

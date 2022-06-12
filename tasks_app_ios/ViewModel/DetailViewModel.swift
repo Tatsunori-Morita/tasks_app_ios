@@ -69,7 +69,7 @@ class DetailViewModel: BaseViewModel {
 
     public override func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.id == fromViewModel.id }) {
+        if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
             section.items.remove(at: index)
             section.items.insert(fromViewModel, at: toIndex)
             section.items = section.items.filter { !$0.title.isEmpty }
@@ -80,14 +80,15 @@ class DetailViewModel: BaseViewModel {
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(id: UUID().uuidString, title: "", notes: "", isChecked: false, parentId: _task.id, subTasks: []),
+            task: Task(id: UUID().uuidString, title: "", notes: "",
+                       isChecked: false, parentId: _task.id, subTasks: [], hasSubTasks: false),
             isNewTask: true))
         _detailTableViewSectionViewModels.accept([section])
     }
 
     public func updateSubTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.id == beforeId }) {
+        if let index = section.items.firstIndex(where: { $0.taskId == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
         } else {
@@ -98,16 +99,8 @@ class DetailViewModel: BaseViewModel {
     }
 
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
-        printLog(data: taskTableViewSectionViewModel.items)
         var section = taskTableViewSectionViewModel
         section.items = section.items.filter { !$0.title.isEmpty }
         _detailTableViewSectionViewModels.accept([section])
-    }
-
-    private func printLog(data: [TaskTableViewCellViewModel]) {
-        print("=============== detail view ===================")
-        data.forEach { viewModel in
-            viewModel.task.toString()
-        }
     }
 }

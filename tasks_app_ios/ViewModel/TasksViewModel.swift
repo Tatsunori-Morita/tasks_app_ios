@@ -10,4 +10,8 @@ class TasksViewModel: BaseViewModel {
         super.init()
         _dataSource.loadMainTasks()
     }
+
+    public func getOpenedSubTasks(parentId: String) -> [Task] {
+        _dataSource.getOpenedSubTasks(parentId: parentId)
+    }
 }

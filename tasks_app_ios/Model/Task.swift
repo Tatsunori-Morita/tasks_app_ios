@@ -14,16 +14,18 @@ class Task: Codable {
     private let _isChecked: Bool
     private let _parentId: String
     private let _subTasks: [Task]
+    private let _hasSubTasks: Bool
     private let _isShowedSubTask: Bool
 
     init(id: String, title: String, notes: String, isChecked: Bool,
-         parentId: String = "", subTasks: [Task] = [], isShowedSubTask: Bool = false) {
+         parentId: String = "", subTasks: [Task] = [], hasSubTasks: Bool, isShowedSubTask: Bool = false) {
         _id = id
         _title = title
         _notes = notes
         _isChecked = isChecked
         _parentId = parentId
         _subTasks = subTasks
+        _hasSubTasks = hasSubTasks
         _isShowedSubTask = isShowedSubTask
     }
 
@@ -51,21 +53,28 @@ class Task: Codable {
         _subTasks
     }
 
+    public var hasSubTasks: Bool {
+        _hasSubTasks
+    }
+
     public var isShowedSubTask: Bool {
         _isShowedSubTask
     }
 
-    public func changeValues(title: String, notes: String, isChecked: Bool, isShowedSubTasks: Bool, subTasks: [Task]? = nil) -> Task {
-        let oldSubTasks = subTasks ?? _subTasks
+    public func changeValues(
+        title: String, notes: String, isChecked: Bool, isShowedSubTasks: Bool,
+        hasSubTasks: Bool, subTasks: [Task] = []) -> Task {
+            let oldSubTasks = isShowedSubTasks ? subTasks : (hasSubTasks && !subTasks.isEmpty) ? subTasks : _subTasks
         let newSubTasks = oldSubTasks.map { task in
             return Task(id: task.id, title: task.title, notes: task.notes,
                         isChecked: task.isChecked, parentId: task.parentId,
-                        subTasks: task.subTasks, isShowedSubTask: task.isShowedSubTask)
+                        subTasks: task.subTasks, hasSubTasks: task.hasSubTasks,
+                        isShowedSubTask: task.isShowedSubTask)
         }
-        let hasSubTasks = newSubTasks.count == 0 ? false : isShowedSubTasks
         return Task(id: _id, title: title, notes: notes,
                     isChecked: isChecked, parentId: _parentId,
-                    subTasks: newSubTasks, isShowedSubTask: hasSubTasks)
+                    subTasks: newSubTasks, hasSubTasks: hasSubTasks,
+                    isShowedSubTask: isShowedSubTasks)
     }
 
     public func toString() {

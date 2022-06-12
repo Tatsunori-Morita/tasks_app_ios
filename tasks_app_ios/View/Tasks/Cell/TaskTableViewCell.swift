@@ -21,6 +21,11 @@ class TaskTableViewCell: UITableViewCell {
     public let tappedCheckMark = UITapGestureRecognizer()
     public var disposeBag = DisposeBag()
 
+    public var isShowedSubTasks: Bool {
+        guard let viewModel = taskTableViewCellViewModel else { return false }
+        return viewModel.isShowedSubTasks
+    }
+
     private var taskTableViewCellViewModel: TaskTableViewCellViewModel?
 
     private let normalTextAttributes: [NSAttributedString.Key: Any] = [
