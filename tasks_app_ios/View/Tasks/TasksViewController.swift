@@ -103,8 +103,10 @@ extension TasksViewController {
 extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
         return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { [self] dataSource, tableView, indexPath, viewModel in
+            let hasSubTasks = tasksViewModel.hasOpenedSubTasks(parentId: viewModel.taskId)
+            let newTaskCellViewModel = viewModel.changeValues(hasSubTasks: hasSubTasks)
             let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
-            cell.configure(viewModel: viewModel)
+            cell.configure(viewModel: newTaskCellViewModel)
 
             cell.textView.rx.didChange.asDriver().drive(with: self, onNext: { owner, _ in
                 tableView.beginUpdates()

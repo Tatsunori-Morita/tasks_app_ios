@@ -14,4 +14,8 @@ class TasksViewModel: BaseViewModel {
     public func getOpenedSubTasks(parentId: String) -> [Task] {
         _dataSource.getOpenedSubTasks(parentId: parentId)
     }
+
+    public func hasOpenedSubTasks(parentId: String) -> Bool {
+        _dataSource.hasOpenedSubTasks(parentId: parentId)
+    }
 }

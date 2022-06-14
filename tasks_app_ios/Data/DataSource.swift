@@ -33,6 +33,10 @@ final class DataSource {
         return section.items[index]
     }
 
+    public func hasOpenedSubTasks(parentId: String) -> Bool {
+        getOpenedSubTasks(parentId: parentId).count > 0
+    }
+
     public func addTaskCell() {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
@@ -53,7 +57,7 @@ final class DataSource {
             // Update or delete task.
             section.items[index] = viewModel
             save(taskTableViewSectionViewModel: section)
-            
+
             if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).count == 0 {
                 guard
                     let parentIndex = section.items.firstIndex(where: { $0.taskId == viewModel.parentId })

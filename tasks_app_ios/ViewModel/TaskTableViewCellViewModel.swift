@@ -11,11 +11,13 @@ class TaskTableViewCellViewModel {
     private let _id: String
     private let _task: Task
     private let _isNewTask: Bool
+    private let _hasSubTasks: Bool
 
-    init(id: String = UUID().uuidString, task: Task, isNewTask: Bool = false) {
+    init(id: String = UUID().uuidString, task: Task, isNewTask: Bool = false, hasSubTasks: Bool = false) {
         _id = id
         _task = task
         _isNewTask = isNewTask
+        _hasSubTasks = hasSubTasks
     }
 
     public var taskId: String {
@@ -59,11 +61,11 @@ class TaskTableViewCellViewModel {
     }
 
     public var hasSubTasks: Bool {
-        _task.hasSubTasks
+        _hasSubTasks || task.subTasks.count > 0
     }
 
-    public func changeValues(task: Task) -> TaskTableViewCellViewModel {
-        return TaskTableViewCellViewModel(id: _id, task: task)
+    public func changeValues(hasSubTasks: Bool) -> TaskTableViewCellViewModel {
+        return TaskTableViewCellViewModel(id: _id, task: task, isNewTask: _isNewTask, hasSubTasks: hasSubTasks)
     }
 }
 
