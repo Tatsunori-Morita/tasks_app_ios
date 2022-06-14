@@ -52,6 +52,19 @@ final class DataSource {
         if let index = section.items.firstIndex(where: { $0.taskId == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
+
+            if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).count == 1 {
+                guard
+                    let parentIndex = section.items.firstIndex(where: { $0.taskId == viewModel.parentId })
+                else { fatalError("not found parent index.") }
+                let oldParentViewModel = section.items[parentIndex]
+                let oldParentTask = oldParentViewModel.task
+                let newParentTask = oldParentViewModel.task.changeValues(
+                    title: oldParentTask.title, notes: oldParentTask.notes,
+                    isChecked: oldParentTask.isChecked, isShowedSubTasks: false)
+                section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
+            }
+
             save(taskTableViewSectionViewModel: section)
         }
     }
