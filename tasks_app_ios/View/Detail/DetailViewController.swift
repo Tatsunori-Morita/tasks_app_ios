@@ -127,6 +127,7 @@ class DetailViewController: UIViewController {
 
         // Add new cell.
         addTaskButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
+            IQKeyboardManager.shared.resignFirstResponder()
             DispatchQueue.main.async {
                 owner.detailViewModel.addSubTaskCell()
                 owner.tableViewConstraintHeight?.constant = owner.tableView.contentSize.height
@@ -156,6 +157,7 @@ extension DetailViewController: UITableViewDropDelegate, UITableViewDragDelegate
                 .filter { $0 != nil }
                 .map { $0! }
                 .subscribe(onNext: { newText in
+                    IQKeyboardManager.shared.resignFirstResponder()
                     let oldTask = viewModel.task
                     let newViewModel = TaskTableViewCellViewModel(task: oldTask.changeValue(title: newText))
                     self.detailViewModel.updateSubTask(viewModel: newViewModel, beforeId: viewModel.taskId)
