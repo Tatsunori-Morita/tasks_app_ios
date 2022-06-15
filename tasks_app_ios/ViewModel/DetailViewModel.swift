@@ -81,7 +81,7 @@ class DetailViewModel: BaseViewModel {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
             task: Task(id: UUID().uuidString, title: "", notes: "",
-                       isChecked: false, parentId: _task.id, subTasks: [], hasSubTasks: false),
+                       isChecked: false, parentId: _task.id, subTasks: []),
             isNewTask: true))
         _detailTableViewSectionViewModels.accept([section])
     }

@@ -40,7 +40,7 @@ final class DataSource {
     public func addTaskCell() {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(id: UUID().uuidString, title: "", notes: "", isChecked: false, hasSubTasks: false),
+            task: Task(id: UUID().uuidString, title: "", notes: "", isChecked: false),
             isNewTask: true))
         _taskTableViewSectionViewModels.accept([section])
     }
@@ -64,9 +64,7 @@ final class DataSource {
                 else { fatalError("not found parent index.") }
                 let oldParentViewModel = section.items[parentIndex]
                 let oldParentTask = oldParentViewModel.task
-                let newParentTask = oldParentViewModel.task.changeValues(
-                    title: oldParentTask.title, notes: oldParentTask.notes,
-                    isChecked: oldParentTask.isChecked, isShowedSubTasks: false, hasSubTasks: false)
+                let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: oldParentTask.subTasks)
                 section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
                 save(taskTableViewSectionViewModel: section)
             }
@@ -79,15 +77,11 @@ final class DataSource {
             let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId }) else {
             fatalError("not found parent index.")
         }
-        let parentViewModel = section.items[parentIndex]
-        let newParentViewModel = TaskTableViewCellViewModel(
-            task: parentViewModel.task.changeValues(
-                title: parentViewModel.title, notes: parentViewModel.notes,
-                isChecked: parentViewModel.isChecked, isShowedSubTasks: true,
-                hasSubTasks: true, subTasks: []))
+        let oldParentTask = section.items[parentIndex].task
+        let newParentViewModel = TaskTableViewCellViewModel(task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []))
         section.items[parentIndex] = newParentViewModel
 
-        let subTaskViewModels = parentViewModel.subTasks.map { subTask in
+        let subTaskViewModels = oldParentTask.subTasks.map { subTask in
             return TaskTableViewCellViewModel(task: subTask)
         }
 
@@ -108,11 +102,8 @@ final class DataSource {
         }
 
         let subTasks = newParentViewModel.subTasks.isEmpty ? subTaskViewModels.map { $0.task } : newParentViewModel.subTasks
-
-        let newParentTask = newParentViewModel.task.changeValues(
-            title: newParentViewModel.title, notes: newParentViewModel.notes,
-            isChecked: newParentViewModel.isChecked,isShowedSubTasks: false,
-            hasSubTasks: true, subTasks: subTasks)
+        let oldParentTask = newParentViewModel.task
+        let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: subTasks)
         section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
         save(taskTableViewSectionViewModel: section)
     }
