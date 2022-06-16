@@ -109,12 +109,27 @@ final class DataSource {
         save(taskTableViewSectionViewModel: section)
     }
 
-    public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
+    public func moveTask(fromIndex: Int, toIndex: Int) {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
+        let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
         if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
+            let oldTask = fromViewModel.task
+            let newTask: Task!
+            if toIndex == 0 {
+                newTask = oldTask.changeValue(parentId: "")
+            } else if section.items.count - 1 == toIndex {
+                let topTaskTableViewModel = getTaskTableViewCellViewModel(index: toIndex)
+                let parentId = topTaskTableViewModel.hasSubTasks ? topTaskTableViewModel.taskId : topTaskTableViewModel.parentId
+                newTask = oldTask.changeValue(parentId: parentId)
+            } else {
+                let topTaskTableViewModel = getTaskTableViewCellViewModel(index: toIndex - 1)
+                let parentId = topTaskTableViewModel.hasSubTasks ? topTaskTableViewModel.taskId : topTaskTableViewModel.parentId
+                newTask = oldTask.changeValue(parentId: parentId)
+            }
+
             section.items.remove(at: index)
-            section.items.insert(fromViewModel, at: toIndex)
-            save(taskTableViewSectionViewModel: section)
+            section.items.insert(fromViewModel.changeValue(task: newTask), at: toIndex)
+            save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
         }
     }
 

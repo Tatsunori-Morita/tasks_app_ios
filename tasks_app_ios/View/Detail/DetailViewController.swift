@@ -121,8 +121,7 @@ class DetailViewController: UIViewController {
         tableView.rx.itemMoved.asDriver().drive(with: self, onNext: { owner, values in
             let (fromIndexPath, toIndexPath) = values
             guard fromIndexPath != toIndexPath else { return }
-            let fromIndexPathViewModel = owner.detailViewModel.getDetailTableViewCellViewModel(index: fromIndexPath.row)
-            owner.detailViewModel.moveTask(fromViewModel: fromIndexPathViewModel, toIndex: toIndexPath.row)
+            owner.detailViewModel.moveTask(fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
         }).disposed(by: disposeBag)
 
         // Add new cell.

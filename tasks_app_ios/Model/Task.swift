@@ -65,6 +65,11 @@ class Task: Codable {
                     parentId: _parentId, subTasks: _subTasks, isShowedSubTask: _isShowedSubTask)
     }
 
+    public func changeValue(parentId: String) -> Task {
+        return Task(id: _id, title: _title, notes: _notes, isChecked: _isChecked,
+                    parentId: parentId, subTasks: _subTasks, isShowedSubTask: _isShowedSubTask)
+    }
+
     public func getRemovingTask() -> Task {
         return Task(id: _id, title: "", notes: _notes, isChecked: _isChecked,
                     parentId: _parentId, subTasks: _subTasks, isShowedSubTask: _isShowedSubTask)

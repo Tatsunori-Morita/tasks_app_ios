@@ -64,6 +64,10 @@ class TaskTableViewCellViewModel {
         _hasSubTasks || task.subTasks.count > 0
     }
 
+    public func changeValue(task: Task) -> TaskTableViewCellViewModel {
+        TaskTableViewCellViewModel(id: _id, task: task, isNewTask: _isNewTask, hasSubTasks: _hasSubTasks)
+    }
+
     public func changeValues(hasSubTasks: Bool) -> TaskTableViewCellViewModel {
         return TaskTableViewCellViewModel(id: _id, task: task, isNewTask: _isNewTask, hasSubTasks: hasSubTasks)
     }
