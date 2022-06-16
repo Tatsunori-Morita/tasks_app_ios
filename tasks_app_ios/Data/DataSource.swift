@@ -58,13 +58,14 @@ final class DataSource {
             section.items[index] = viewModel
             save(taskTableViewSectionViewModel: section)
 
-            if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).count == 0 {
+            if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).isEmpty {
+                // If Parent task has not sub tasks, update Parent task subtasks property.
                 guard
                     let parentIndex = section.items.firstIndex(where: { $0.taskId == viewModel.parentId })
-                else { fatalError("not found parent index.") }
+                else { fatalError("updateTask:not found parent index.") }
                 let oldParentViewModel = section.items[parentIndex]
                 let oldParentTask = oldParentViewModel.task
-                let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: oldParentTask.subTasks)
+                let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
                 section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
                 save(taskTableViewSectionViewModel: section)
             }
@@ -75,7 +76,7 @@ final class DataSource {
         guard
             var section = _taskTableViewSectionViewModels.value.last,
             let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId }) else {
-            fatalError("not found parent index.")
+            fatalError("openedSubTasks:not found parent index.")
         }
         let oldParentTask = section.items[parentIndex].task
         let newParentViewModel = TaskTableViewCellViewModel(task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []))
@@ -93,7 +94,7 @@ final class DataSource {
         guard
             var section = _taskTableViewSectionViewModels.value.last,
             let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId })
-        else { fatalError("not found parent index.") }
+        else { fatalError("closedSubTasks:not found parent index.") }
         let subTaskViewModels = section.items.filter { $0.parentId == newParentViewModel.taskId}
         subTaskViewModels.forEach { subTaskViewModel in
             if let subTaskIndex = section.items.firstIndex(where: { $0.taskId == subTaskViewModel.taskId }) {
