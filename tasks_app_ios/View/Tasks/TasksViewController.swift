@@ -167,6 +167,12 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
     }
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let viewModel = tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
+
+        if viewModel.isShowedSubTasks {
+            tasksViewModel.closedSubTasks(newParentViewModel: viewModel)
+        }
+
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
