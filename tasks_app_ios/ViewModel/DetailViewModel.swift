@@ -69,7 +69,7 @@ class DetailViewModel: BaseViewModel {
 
     public override func moveTask(fromIndex: Int, toIndex: Int) {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
-        let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
+        let fromViewModel = getDetailTableViewCellViewModel(index: fromIndex)
         if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
             section.items.remove(at: index)
             section.items.insert(fromViewModel, at: toIndex)

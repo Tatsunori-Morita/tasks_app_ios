@@ -113,22 +113,20 @@ final class DataSource {
         guard var section = _taskTableViewSectionViewModels.value.last else { return }
         let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
         if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
+            section.items.remove(at: index)
+            section.items.insert(fromViewModel, at: toIndex)
+
             let oldTask = fromViewModel.task
             let newTask: Task!
             if toIndex == 0 {
                 newTask = oldTask.changeValue(parentId: "")
-            } else if section.items.count - 1 == toIndex {
-                let topTaskTableViewModel = getTaskTableViewCellViewModel(index: toIndex)
-                let parentId = topTaskTableViewModel.hasSubTasks ? topTaskTableViewModel.taskId : topTaskTableViewModel.parentId
-                newTask = oldTask.changeValue(parentId: parentId)
             } else {
-                let topTaskTableViewModel = getTaskTableViewCellViewModel(index: toIndex - 1)
+                let topTaskTableViewModel = section.items[toIndex - 1]
                 let parentId = topTaskTableViewModel.hasSubTasks ? topTaskTableViewModel.taskId : topTaskTableViewModel.parentId
                 newTask = oldTask.changeValue(parentId: parentId)
             }
 
-            section.items.remove(at: index)
-            section.items.insert(fromViewModel.changeValue(task: newTask), at: toIndex)
+            section.items[toIndex] = TaskTableViewCellViewModel(task: newTask)
             save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
         }
     }
