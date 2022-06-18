@@ -122,13 +122,42 @@ final class DataSource {
                 newTask = oldTask.changeValue(parentId: "")
             } else {
                 let topTaskTableViewModel = section.items[toIndex - 1]
-                let parentId = topTaskTableViewModel.parentId.isEmpty ? "" : topTaskTableViewModel.parentId
+                let parentId = topTaskTableViewModel.parentId.isEmpty ? (topTaskTableViewModel.isShowedSubTasks ? topTaskTableViewModel.taskId : "") : topTaskTableViewModel.parentId
                 newTask = oldTask.changeValue(parentId: parentId)
             }
 
             section.items[toIndex] = TaskTableViewCellViewModel(task: newTask)
             save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
         }
+    }
+
+    public func insertTask(fromIndex: Int, toIndex: Int) {
+        guard var section = _taskTableViewSectionViewModels.value.last else { return }
+        let fromViewModel = section.items[fromIndex]
+        section.items.remove(at: fromIndex)
+        let newToIndex = section.items.count == toIndex ? section.items.count - 1 : toIndex
+        let toViewModel = section.items[newToIndex]
+
+        if fromViewModel.hasSubTasks || !toViewModel.parentId.isEmpty {
+            return
+        }
+
+        let oldFromTask = fromViewModel.task
+        let oldToTask = toViewModel.task
+        let newFromTask: Task!
+        let newToTask: Task!
+
+        if toViewModel.isShowedSubTasks {
+            newFromTask = oldFromTask.changeValue(parentId: toViewModel.taskId)
+            section.items.insert(TaskTableViewCellViewModel(task: newFromTask), at: toIndex + 1)
+        } else {
+            newFromTask = oldFromTask.changeValue(parentId: toViewModel.taskId)
+            var oldSubTasks = toViewModel.subTasks
+            oldSubTasks.append(newFromTask)
+            newToTask = oldToTask.changeValue(isShowedSubTasks: false, subTasks: oldSubTasks)
+            section.items[toIndex] = TaskTableViewCellViewModel(task: newToTask)
+        }
+        save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
     }
 
     public func loadMainTasks() {

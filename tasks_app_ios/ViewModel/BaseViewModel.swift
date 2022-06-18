@@ -36,6 +36,10 @@ class BaseViewModel {
         _dataSource.moveTask(fromIndex: fromIndex, toIndex: toIndex)
     }
 
+    public func insertTask(fromIndex: Int, toIndex: Int) {
+        _dataSource.insertTask(fromIndex: fromIndex, toIndex: toIndex)
+    }
+
     public func getTaskTableViewModel(id: String) -> TaskTableViewCellViewModel {
         guard let index = taskTableViewCellViewModelArray.firstIndex(where: { $0.taskId == id}) else {
             fatalError("getTaskTableViewModel: index of out of range")
