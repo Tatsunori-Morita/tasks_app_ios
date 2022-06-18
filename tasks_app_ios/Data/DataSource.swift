@@ -122,7 +122,7 @@ final class DataSource {
                 newTask = oldTask.changeValue(parentId: "")
             } else {
                 let topTaskTableViewModel = section.items[toIndex - 1]
-                let parentId = topTaskTableViewModel.hasSubTasks ? topTaskTableViewModel.taskId : topTaskTableViewModel.parentId
+                let parentId = topTaskTableViewModel.parentId.isEmpty ? "" : topTaskTableViewModel.parentId
                 newTask = oldTask.changeValue(parentId: parentId)
             }
 
