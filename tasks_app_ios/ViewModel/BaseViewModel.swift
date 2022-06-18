@@ -32,7 +32,26 @@ class BaseViewModel {
         _dataSource.updateTask(viewModel: viewModel, beforeId: beforeId)
     }
 
-    public func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
-        _dataSource.moveTask(fromViewModel: fromViewModel, toIndex: toIndex)
+    public func moveTask(fromIndex: Int, toIndex: Int) {
+        _dataSource.moveTask(fromIndex: fromIndex, toIndex: toIndex)
+    }
+
+    public func insertTask(fromIndex: Int, toIndex: Int) {
+        _dataSource.insertTask(fromIndex: fromIndex, toIndex: toIndex)
+    }
+
+    public func getTaskTableViewModel(id: String) -> TaskTableViewCellViewModel {
+        guard let index = taskTableViewCellViewModelArray.firstIndex(where: { $0.taskId == id}) else {
+            fatalError("getTaskTableViewModel: index of out of range")
+        }
+        return getTaskTableViewCellViewModel(index: index)
+    }
+
+    public func openedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
+        _dataSource.openedSubTasks(newParentViewModel: newParentViewModel)
+    }
+
+    public func closedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
+        _dataSource.closedSubTasks(newParentViewModel: newParentViewModel)
     }
 }

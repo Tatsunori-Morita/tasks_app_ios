@@ -19,7 +19,7 @@ class DetailViewModel: BaseViewModel {
         _isNewTask = isNewTask
         super.init()
         var sections = _detailTableViewSectionViewModels.value
-        let items = task.children.map { child in
+        let items = task.subTasks.map { child in
             return TaskTableViewCellViewModel(task: child)
         }
         sections.append(contentsOf: [TaskTableViewSectionViewModel(header: "", items: items)])
@@ -67,9 +67,10 @@ class DetailViewModel: BaseViewModel {
         return section.items[index]
     }
 
-    public override func moveTask(fromViewModel: TaskTableViewCellViewModel, toIndex: Int) {
+    public override func moveTask(fromIndex: Int, toIndex: Int) {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.id == fromViewModel.id }) {
+        let fromViewModel = getDetailTableViewCellViewModel(index: fromIndex)
+        if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
             section.items.remove(at: index)
             section.items.insert(fromViewModel, at: toIndex)
             section.items = section.items.filter { !$0.title.isEmpty }
@@ -80,14 +81,15 @@ class DetailViewModel: BaseViewModel {
     public func addSubTaskCell() {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
         section.items.append(TaskTableViewCellViewModel(
-            task: Task(title: "", notes: "", isChecked: false, parentId: _task.id, children: []),
+            task: Task(id: UUID().uuidString, title: "", notes: "",
+                       isChecked: false, parentId: _task.id, subTasks: []),
             isNewTask: true))
         _detailTableViewSectionViewModels.accept([section])
     }
 
     public func updateSubTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
         guard var section = _detailTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.id == beforeId }) {
+        if let index = section.items.firstIndex(where: { $0.taskId == beforeId }) {
             // Update or delete task.
             section.items[index] = viewModel
         } else {
