@@ -69,6 +69,28 @@ final class DataSource {
                 section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
                 save(taskTableViewSectionViewModel: section)
             }
+
+            if !viewModel.isChild {
+                let subTasks = viewModel.isShowedSubTasks ? getOpenedSubTasks(parentId: viewModel.taskId) : viewModel.subTasks
+                subTasks.forEach { subTask in
+                    if let index = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
+                        let newTask = subTask.changeValue(isChecked: viewModel.isChecked)
+                        section.items[index] = TaskTableViewCellViewModel(task: newTask)
+                    }
+                }
+
+                if viewModel.title.isEmpty && viewModel.isShowedSubTasks {
+                    let subTasks = getOpenedSubTasks(parentId: viewModel.taskId)
+                    subTasks.forEach { subTask in
+                        if let index = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
+                            let newTask = subTask.changeValue(title: "")
+                            section.items[index] = TaskTableViewCellViewModel(task: newTask)
+                        }
+                    }
+                }
+
+                save(taskTableViewSectionViewModel: section)
+            }
         }
     }
 
