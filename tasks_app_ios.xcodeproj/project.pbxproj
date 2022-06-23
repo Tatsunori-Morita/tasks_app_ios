@@ -304,7 +304,6 @@
 				0E8F78DA2864889300288FDC /* Sources */,
 				0E8F78DB2864889300288FDC /* Frameworks */,
 				0E8F78DC2864889300288FDC /* Resources */,
-				2065BEDD0EAF0199602CE2F1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -414,28 +413,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$SRCROOT/R.generated.swift,
+				"$SRCROOT/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/R.generated.swift\"\n";
-		};
-		2065BEDD0EAF0199602CE2F1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-tasks_app_iosTests/Pods-tasks_app_iosTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-tasks_app_iosTests/Pods-tasks_app_iosTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-tasks_app_iosTests/Pods-tasks_app_iosTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		8C03214896FA467E199B667F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
