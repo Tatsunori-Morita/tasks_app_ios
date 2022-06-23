@@ -14,7 +14,7 @@ final class DataSource {
     public static let shared = DataSource()
 
     private let _taskTableViewSectionViewModels = BehaviorRelay<[TaskTableViewSectionViewModel]>(value: [])
-    private let userDefaultsName = "Tasks"
+    private let _userDefaultsName = "Tasks"
 
     public var taskTableViewSectionViewModelObservable: Observable<[TaskTableViewSectionViewModel]> {
         _taskTableViewSectionViewModels.asObservable()
@@ -26,9 +26,14 @@ final class DataSource {
     }
 
     public func getTaskTableViewCellViewModel(index: Int) -> TaskTableViewCellViewModel {
-        let section = _taskTableViewSectionViewModels.value.last!
+        guard
+            let section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
+        }
+
         if index < 0 || section.items.endIndex < index {
-            fatalError("index of out of range: \(index)")
+            fatalError("index of out range: \(index)")
         }
         return section.items[index]
     }
@@ -38,70 +43,95 @@ final class DataSource {
     }
 
     public func addTaskCell() {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        section.items.append(TaskTableViewCellViewModel(
-            task: Task(id: UUID().uuidString, title: "", notes: "", isChecked: false),
+        guard
+            var section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
+        }
+        section.items.append(
+            TaskTableViewCellViewModel(
+            task: Task(
+                id: UUID().uuidString, title: "", notes: "", isChecked: false),
             isNewTask: true))
         _taskTableViewSectionViewModels.accept([section])
     }
 
     public func getOpenedSubTasks(parentId: String) -> [Task] {
-        guard let section = _taskTableViewSectionViewModels.value.last else { return [] }
+        guard
+            let section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
+        }
         let subTaskViewModels = section.items.filter { $0.parentId == parentId}
         return subTaskViewModels.map { $0.task }
     }
 
     public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        if let index = section.items.firstIndex(where: { $0.taskId == beforeId }) {
-            // Update or delete task.
-            section.items[index] = viewModel
-            save(taskTableViewSectionViewModel: section)
+        guard
+            var section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
+        }
 
-            if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).isEmpty {
-                // If Parent task has not sub tasks, update Parent task subtasks property.
-                guard
-                    let parentIndex = section.items.firstIndex(where: { $0.taskId == viewModel.parentId })
-                else { fatalError("updateTask:not found parent index.") }
-                let oldParentViewModel = section.items[parentIndex]
-                let oldParentTask = oldParentViewModel.task
-                let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
-                section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
-                save(taskTableViewSectionViewModel: section)
+        guard
+            let index = section.items.firstIndex(where: { $0.taskId == beforeId })
+        else {
+            fatalError("found not task id.")
+        }
+
+        // Update or delete task.
+        section.items[index] = viewModel
+        save(taskTableViewSectionViewModel: section)
+
+        if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).isEmpty {
+            // If Parent task has not sub tasks, update task subtasks property of Parent.
+            guard
+                let parentIndex = section.items.firstIndex(where: { $0.taskId == viewModel.parentId })
+            else {
+                fatalError("updateTask:not found parent index.")
             }
 
-            if !viewModel.isChild {
-                let subTasks = viewModel.isShowedSubTasks ? getOpenedSubTasks(parentId: viewModel.taskId) : viewModel.subTasks
+            let oldParentViewModel = section.items[parentIndex]
+            let oldParentTask = oldParentViewModel.task
+            let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
+            section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
+            save(taskTableViewSectionViewModel: section)
+        }
+
+        if !viewModel.isChild {
+            let subTasks = viewModel.isShowedSubTasks ? getOpenedSubTasks(parentId: viewModel.taskId) : viewModel.subTasks
+            subTasks.forEach { subTask in
+                if let index = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
+                    let newTask = subTask.changeValue(isChecked: viewModel.isChecked)
+                    section.items[index] = TaskTableViewCellViewModel(task: newTask)
+                }
+            }
+
+            if viewModel.title.isEmpty && viewModel.isShowedSubTasks {
+                let subTasks = getOpenedSubTasks(parentId: viewModel.taskId)
                 subTasks.forEach { subTask in
                     if let index = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
-                        let newTask = subTask.changeValue(isChecked: viewModel.isChecked)
+                        let newTask = subTask.changeValue(title: "")
                         section.items[index] = TaskTableViewCellViewModel(task: newTask)
                     }
                 }
-
-                if viewModel.title.isEmpty && viewModel.isShowedSubTasks {
-                    let subTasks = getOpenedSubTasks(parentId: viewModel.taskId)
-                    subTasks.forEach { subTask in
-                        if let index = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
-                            let newTask = subTask.changeValue(title: "")
-                            section.items[index] = TaskTableViewCellViewModel(task: newTask)
-                        }
-                    }
-                }
-
-                save(taskTableViewSectionViewModel: section)
             }
+
+            save(taskTableViewSectionViewModel: section)
         }
     }
 
     public func openedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
         guard
             var section = _taskTableViewSectionViewModels.value.last,
-            let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId }) else {
+            let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId })
+        else {
             fatalError("openedSubTasks:not found parent index.")
         }
+
         let oldParentTask = section.items[parentIndex].task
-        let newParentViewModel = TaskTableViewCellViewModel(task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []))
+        let newParentViewModel = TaskTableViewCellViewModel(
+            task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []))
         section.items[parentIndex] = newParentViewModel
 
         let subTaskViewModels = oldParentTask.subTasks.map { subTask in
@@ -116,7 +146,10 @@ final class DataSource {
         guard
             var section = _taskTableViewSectionViewModels.value.last,
             let parentIndex = section.items.firstIndex(where: { $0.taskId == newParentViewModel.taskId })
-        else { fatalError("closedSubTasks:not found parent index.") }
+        else {
+            fatalError("closedSubTasks:not found parent index.")
+        }
+
         let subTaskViewModels = section.items.filter { $0.parentId == newParentViewModel.taskId}
         subTaskViewModels.forEach { subTaskViewModel in
             if let subTaskIndex = section.items.firstIndex(where: { $0.taskId == subTaskViewModel.taskId }) {
@@ -132,29 +165,42 @@ final class DataSource {
     }
 
     public func moveTask(fromIndex: Int, toIndex: Int) {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
-        let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
-        if let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) {
-            section.items.remove(at: index)
-            section.items.insert(fromViewModel, at: toIndex)
-
-            let oldTask = fromViewModel.task
-            let newTask: Task!
-            if toIndex == 0 {
-                newTask = oldTask.changeValue(parentId: "")
-            } else {
-                let topTaskTableViewModel = section.items[toIndex - 1]
-                let parentId = topTaskTableViewModel.parentId.isEmpty ? (topTaskTableViewModel.isShowedSubTasks ? topTaskTableViewModel.taskId : "") : topTaskTableViewModel.parentId
-                newTask = oldTask.changeValue(parentId: parentId)
-            }
-
-            section.items[toIndex] = TaskTableViewCellViewModel(task: newTask)
-            save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
+        guard
+            var section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
         }
+        
+        let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
+
+        guard let index = section.items.firstIndex(where: { $0.taskId == fromViewModel.taskId }) else {
+            fatalError("not found task id.")
+        }
+
+        section.items.remove(at: index)
+        section.items.insert(fromViewModel, at: toIndex)
+
+        let oldTask = fromViewModel.task
+        let newTask: Task!
+        if toIndex == 0 {
+            newTask = oldTask.changeValue(parentId: "")
+        } else {
+            let topTaskTableViewModel = section.items[toIndex - 1]
+            let parentId = topTaskTableViewModel.parentId.isEmpty ? (topTaskTableViewModel.isShowedSubTasks ? topTaskTableViewModel.taskId : "") : topTaskTableViewModel.parentId
+            newTask = oldTask.changeValue(parentId: parentId)
+        }
+
+        section.items[toIndex] = TaskTableViewCellViewModel(task: newTask)
+        save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel(header: "", items: section.items))
     }
 
     public func insertTask(fromIndex: Int, toIndex: Int) {
-        guard var section = _taskTableViewSectionViewModels.value.last else { return }
+        guard
+            var section = _taskTableViewSectionViewModels.value.last
+        else {
+            fatalError("sectionViewModel is nil.")
+        }
+
         let fromViewModel = section.items[fromIndex]
         section.items.remove(at: fromIndex)
         let newToIndex = section.items.count == toIndex ? section.items.count - 1 : toIndex
@@ -192,7 +238,7 @@ final class DataSource {
 
     private func loadTasks() -> [Task] {
         guard
-            let objects = UserDefaults.standard.value(forKey: userDefaultsName) as? Data,
+            let objects = UserDefaults.standard.value(forKey: _userDefaultsName) as? Data,
             let tasks = try? JSONDecoder().decode(Array.self, from: objects) as [Task]
         else { return [] }
         return tasks
@@ -206,24 +252,18 @@ final class DataSource {
     }
 
     private func saveUserDefaults(sectionViewModels: [TaskTableViewSectionViewModel]) {
-        var taskModels: [Task] = []
-        for sectionViewModel in sectionViewModels {
-            for cellViewModel in sectionViewModel.items {
-                taskModels.append(cellViewModel.task)
-            }
+        guard let sectionViewModel = sectionViewModels.first else {
+            fatalError("sectionViewModel is nil.")
         }
+
+        let taskModels = sectionViewModel.items.map { $0.task }
+
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(taskModels){
             print("======================== Data Log Start ==========================")
             print(String(data: encoded, encoding: .utf8)!)
             print("======================== Data Log End ==========================")
-            UserDefaults.standard.set(encoded, forKey: userDefaultsName)
-        }
-    }
-
-    private func printLog(data: [TaskTableViewCellViewModel]) {
-        data.forEach { viewModel in
-            viewModel.task.toString()
+            UserDefaults.standard.set(encoded, forKey: _userDefaultsName)
         }
     }
 }
