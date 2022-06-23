@@ -266,4 +266,8 @@ final class DataSource {
             UserDefaults.standard.set(encoded, forKey: _userDefaultsName)
         }
     }
+
+    public func testMethod() -> Int {
+        return 1
+    }
 }

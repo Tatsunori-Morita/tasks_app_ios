@@ -6,10 +6,14 @@ target 'tasks_app_ios' do
   use_frameworks!
 
   # Pods for tasks_app_ios
-  pod 'RxSwift'
+#  pod 'RxSwift'
   pod 'RxCocoa'
   pod 'RxDataSources', '~> 5.0'
   pod 'IQKeyboardManagerSwift'
   pod 'R.swift'
 
+  target 'tasks_app_iosTests' do
+    inherit! :search_paths
+    pod 'RxSwift'
+  end
 end
