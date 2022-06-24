@@ -55,6 +55,10 @@ class Task: Codable {
         _isShowedSubTask
     }
 
+    public static func createNewTask() -> Task {
+        return Task(id: UUID().uuidString, title: "", notes: "", isChecked: false)
+    }
+
     public func changeValue(title: String) -> Task {
         return Task(id: _id, title: title, notes: _notes, isChecked: _isChecked,
                     parentId: _parentId, subTasks: _subTasks, isShowedSubTask: _isShowedSubTask)
