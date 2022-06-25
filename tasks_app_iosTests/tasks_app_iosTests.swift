@@ -18,6 +18,10 @@ class tasks_app_iosTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+    override func setUp() {
+        _dataSource.clearUserDefaults()
+    }
+
     func testChangeCheckMark() throws {
         let parentId = UUID().uuidString
         let isChecked = true
@@ -43,6 +47,41 @@ class tasks_app_iosTests: XCTestCase {
         afterChangedSubTasks.forEach { task in
             XCTAssertEqual(task.isChecked, !isChecked)
         }
+    }
+
+    func testRemoveTask() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "remove parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "remove subTask1", notes: "", isChecked: false, parentId: parentId,subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "remove subTask2", notes: "", isChecked: false, parentId: parentId,subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let parentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+
+        let subTask1ViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTask1.id)
+        let subTask2ViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTask2.id)
+
+        _dataSource.removeTask(viewModel: subTask1ViewModel)
+
+        if _dataSource.hasTaskId(taskId: subTask1ViewModel.taskId) {
+            XCTFail()
+        }
+
+        _dataSource.removeTask(viewModel: parentTaskViewModel)
+
+        if _dataSource.hasTaskId(taskId: subTask2ViewModel.taskId) {
+            XCTFail()
+        }
+
+        if _dataSource.hasTaskId(taskId: parentTaskViewModel.taskId) {
+            XCTFail()
+        }
+
+        _dataSource.log()
     }
 
     func testPerformanceExample() throws {

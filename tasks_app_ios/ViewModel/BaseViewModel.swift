@@ -28,16 +28,29 @@ class BaseViewModel {
         _dataSource.addTaskCell()
     }
 
-    public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        _dataSource.updateTask(viewModel: viewModel, beforeId: beforeId)
+    public func changeTitle(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+        _dataSource.changeTitle(viewModel: viewModel, beforeId: beforeId)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
+    public func changeCheckMark(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+        _dataSource.changeCheckMark(viewModel: viewModel, beforeId: beforeId)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
+    public func removeTask(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.removeTask(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func moveTask(fromIndex: Int, toIndex: Int) {
         _dataSource.moveTask(fromIndex: fromIndex, toIndex: toIndex)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func insertTask(fromIndex: Int, toIndex: Int) {
         _dataSource.insertTask(fromIndex: fromIndex, toIndex: toIndex)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func getTaskTableViewModel(id: String) -> TaskTableViewCellViewModel {
@@ -49,9 +62,11 @@ class BaseViewModel {
 
     public func openedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
         _dataSource.openedSubTasks(newParentViewModel: newParentViewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func closedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
         _dataSource.closedSubTasks(newParentViewModel: newParentViewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 }

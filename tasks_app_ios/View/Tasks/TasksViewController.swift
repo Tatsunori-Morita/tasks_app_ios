@@ -51,7 +51,7 @@ class TasksViewController: UIViewController {
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
             let newTask = oldViewModel.task.getRemovingTask()
             let newViewModel = TaskTableViewCellViewModel(task: newTask, isNewTask: true)
-            owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: oldViewModel.taskId)
+            owner.tasksViewModel.removeTask(viewModel: newViewModel)
         }).disposed(by: disposeBag)
 
         // Move cell.
@@ -126,14 +126,14 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                     cell.infoButton.isHidden = true
                     let newTask = viewModel.task.changeValue(title: newText)
                     let newViewModel = TaskTableViewCellViewModel(task: newTask)
-                    self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.taskId)
+                    self.tasksViewModel.changeTitle(viewModel: newViewModel, beforeId: viewModel.taskId)
                 }).disposed(by: cell.disposeBag)
 
             cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
                 let oldTask = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId).task
                 let newViewModel = TaskTableViewCellViewModel(task: oldTask.changeValue(isChecked: !oldTask.isChecked))
-                owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.taskId)
+                owner.tasksViewModel.changeCheckMark(viewModel: newViewModel, beforeId: viewModel.taskId)
             }).disposed(by: cell.disposeBag)
 
             cell.infoButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
