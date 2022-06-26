@@ -60,13 +60,13 @@ class BaseViewModel {
         return getTaskTableViewCellViewModel(index: index)
     }
 
-    public func openedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
-        _dataSource.openedSubTasks(newParentViewModel: newParentViewModel)
+    public func openSubTasks(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.openSubTasks(viewModel: viewModel)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
-    public func closedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
-        _dataSource.closedSubTasks(newParentViewModel: newParentViewModel)
+    public func closeSubTasks(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.closeSubTasks(viewModel: viewModel)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 }

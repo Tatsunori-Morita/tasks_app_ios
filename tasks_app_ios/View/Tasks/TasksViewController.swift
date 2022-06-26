@@ -154,9 +154,9 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                 let oldViewModel = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId)
                 let isShowedSubTasks = !oldViewModel.isShowedSubTasks
                 if isShowedSubTasks {
-                    owner.tasksViewModel.openedSubTasks(newParentViewModel: oldViewModel)
+                    owner.tasksViewModel.openSubTasks(viewModel: oldViewModel)
                 } else {
-                    owner.tasksViewModel.closedSubTasks(newParentViewModel: oldViewModel)
+                    owner.tasksViewModel.closeSubTasks(viewModel: oldViewModel)
                 }
             }).disposed(by: cell.disposeBag)
             return cell
@@ -173,7 +173,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
         let viewModel = tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
 
         if viewModel.isShowedSubTasks {
-            tasksViewModel.closedSubTasks(newParentViewModel: viewModel)
+            tasksViewModel.closeSubTasks(viewModel: viewModel)
         }
 
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
