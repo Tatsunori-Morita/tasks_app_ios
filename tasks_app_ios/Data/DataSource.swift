@@ -104,7 +104,8 @@ final class DataSource {
 
         section.items[index] = viewModel
 
-        if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).count == 1 {
+        if viewModel.isChild && viewModel.title.isEmpty &&
+            getOpenedSubTasks(parentId: viewModel.parentId).count == 1 {
             // If Parent task has not sub tasks, update task subtasks property of Parent.
             let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.parentId)
             let oldParentViewModel = section.items[parentIndex]

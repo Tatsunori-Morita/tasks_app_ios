@@ -71,7 +71,7 @@ class DetailViewController: UIViewController {
                 let newViewModel = TaskTableViewCellViewModel(
                     task: oldTask.changeValues(
                         title: owner.titleTextView.text, notes: owner.notesTextView.text,
-                        isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: true, subTasks: []))
+                        isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: true, subTasks: subTasks))
                 owner.detailViewModel.closedSubTasks(newParentViewModel: newViewModel)
                 owner.detailViewModel.openedSubTasks(newParentViewModel: newViewModel)
             } else {
