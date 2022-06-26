@@ -79,7 +79,7 @@ class DetailViewController: UIViewController {
                     task: oldTask.changeValues(
                         title: owner.titleTextView.text, notes: owner.notesTextView.text,
                         isChecked: owner.detailViewModel.isChecked, isShowedSubTasks: false, subTasks: subTasks))
-                owner.detailViewModel.changeTitle(viewModel: newViewModel, beforeId: owner.detailViewModel.id)
+                owner.detailViewModel.saveDetailValues(viewModel: newViewModel)
             }
 
             owner.dismiss(animated: true)

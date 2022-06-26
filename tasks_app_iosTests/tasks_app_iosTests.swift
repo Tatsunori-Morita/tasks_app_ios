@@ -39,7 +39,7 @@ class tasks_app_iosTests: XCTestCase {
         
         let newParentTask = parentTask.changeValue(isChecked: !parentTask.isChecked)
         let newParentTaskViewModel = TaskTableViewCellViewModel(task: newParentTask)
-        _dataSource.changeCheckMark(viewModel: newParentTaskViewModel, beforeId: parentId)
+        _dataSource.changeCheckMark(viewModel: newParentTaskViewModel)
 
         _dataSource.log()
 
@@ -82,6 +82,45 @@ class tasks_app_iosTests: XCTestCase {
         }
 
         _dataSource.log()
+    }
+
+    func testChangeTitle() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent task title", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
+        _dataSource.addTask(task: parentTask)
+
+        let subTaskId = UUID().uuidString
+        let subTask = Task(id: subTaskId, title: "sub task title", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask)
+
+        let oldParentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        let newTask = oldParentTaskViewModel.task.changeValue(title: "new parent task title")
+        let newParentTaskViewModel = TaskTableViewCellViewModel(task: newTask)
+        _dataSource.changeTitle(viewModel: newParentTaskViewModel)
+
+        print("-------- Change Parent task title -----------")
+        _dataSource.log()
+
+        let changedAfterParentViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+
+        if changedAfterParentViewModel.title != newParentTaskViewModel.title {
+            XCTFail("titleの変更が正しくおこなわれませんでした。")
+        }
+
+        // remove sub task.
+        let oldSubTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTaskId)
+        let newSubTask = oldSubTaskViewModel.task.changeValue(title: "")
+        let newSubTaskViewModel = TaskTableViewCellViewModel(task: newSubTask)
+        _dataSource.changeTitle(viewModel: newSubTaskViewModel)
+
+        print("-------- Remove Sub task -----------")
+        _dataSource.log()
+
+        let changedAfterParentViewModelNotHasSubTask = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+
+        if !changedAfterParentViewModelNotHasSubTask.subTasks.isEmpty || changedAfterParentViewModelNotHasSubTask.isShowedSubTasks {
+            XCTFail("Parent taskの値が正しくありません。")
+        }
     }
 
     func testPerformanceExample() throws {

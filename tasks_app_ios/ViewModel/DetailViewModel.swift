@@ -99,6 +99,11 @@ class DetailViewModel: BaseViewModel {
         save(taskTableViewSectionViewModel: section)
     }
 
+    public func saveDetailValues(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.saveDetailValues(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
     private func save(taskTableViewSectionViewModel: TaskTableViewSectionViewModel) {
         var section = taskTableViewSectionViewModel
         section.items = section.items.filter { !$0.title.isEmpty }

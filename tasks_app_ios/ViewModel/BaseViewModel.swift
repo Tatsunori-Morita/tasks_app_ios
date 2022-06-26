@@ -28,13 +28,13 @@ class BaseViewModel {
         _dataSource.addTaskCell()
     }
 
-    public func changeTitle(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        _dataSource.changeTitle(viewModel: viewModel, beforeId: beforeId)
+    public func changeTitle(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.changeTitle(viewModel: viewModel)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
-    public func changeCheckMark(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        _dataSource.changeCheckMark(viewModel: viewModel, beforeId: beforeId)
+    public func changeCheckMark(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.changeCheckMark(viewModel: viewModel)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 

@@ -126,14 +126,14 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                     cell.infoButton.isHidden = true
                     let newTask = viewModel.task.changeValue(title: newText)
                     let newViewModel = TaskTableViewCellViewModel(task: newTask)
-                    self.tasksViewModel.changeTitle(viewModel: newViewModel, beforeId: viewModel.taskId)
+                    self.tasksViewModel.changeTitle(viewModel: newViewModel)
                 }).disposed(by: cell.disposeBag)
 
             cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
                 let oldTask = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId).task
                 let newViewModel = TaskTableViewCellViewModel(task: oldTask.changeValue(isChecked: !oldTask.isChecked))
-                owner.tasksViewModel.changeCheckMark(viewModel: newViewModel, beforeId: viewModel.taskId)
+                owner.tasksViewModel.changeCheckMark(viewModel: newViewModel)
             }).disposed(by: cell.disposeBag)
 
             cell.infoButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in

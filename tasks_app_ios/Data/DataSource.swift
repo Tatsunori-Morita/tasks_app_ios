@@ -91,23 +91,28 @@ final class DataSource {
         return subTaskViewModels.map { $0.task }
     }
 
-    public func changeTitle(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+    public func saveDetailValues(viewModel: TaskTableViewCellViewModel) {
         var section = getSectionViewModel()
-        let index = getTaskIdOfSectionItems(taskId: beforeId)
-
-        // Update or delete task.
+        let index = getTaskIdOfSectionItems(taskId: viewModel.taskId)
         section.items[index] = viewModel
         saveBehaviorRelay(taskTableViewSectionViewModel: section)
+    }
 
-        if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).isEmpty {
+    public func changeTitle(viewModel: TaskTableViewCellViewModel) {
+        var section = getSectionViewModel()
+        let index = getTaskIdOfSectionItems(taskId: viewModel.taskId)
+
+        section.items[index] = viewModel
+
+        if viewModel.isChild && viewModel.title.isEmpty && getOpenedSubTasks(parentId: viewModel.parentId).count == 1 {
             // If Parent task has not sub tasks, update task subtasks property of Parent.
             let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.parentId)
             let oldParentViewModel = section.items[parentIndex]
             let oldParentTask = oldParentViewModel.task
             let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
             section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
-            saveBehaviorRelay(taskTableViewSectionViewModel: section)
         }
+        saveBehaviorRelay(taskTableViewSectionViewModel: section)
     }
 
     public func removeTask(viewModel: TaskTableViewCellViewModel) {
@@ -126,9 +131,9 @@ final class DataSource {
         saveBehaviorRelay(taskTableViewSectionViewModel: section)
     }
 
-    public func changeCheckMark(viewModel: TaskTableViewCellViewModel, beforeId: String) {
+    public func changeCheckMark(viewModel: TaskTableViewCellViewModel) {
         var section = getSectionViewModel()
-        let index = getTaskIdOfSectionItems(taskId: beforeId)
+        let index = getTaskIdOfSectionItems(taskId: viewModel.taskId)
         section.items[index] = viewModel
 
         if !viewModel.isChild {
