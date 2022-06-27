@@ -12,4 +12,7 @@ target 'tasks_app_ios' do
   pod 'IQKeyboardManagerSwift'
   pod 'R.swift'
 
+  target 'tasks_app_iosTests' do
+    inherit! :search_paths
+  end
 end

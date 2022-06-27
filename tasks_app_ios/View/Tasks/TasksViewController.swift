@@ -51,7 +51,7 @@ class TasksViewController: UIViewController {
             let oldViewModel = owner.tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
             let newTask = oldViewModel.task.getRemovingTask()
             let newViewModel = TaskTableViewCellViewModel(task: newTask, isNewTask: true)
-            owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: oldViewModel.taskId)
+            owner.tasksViewModel.removeTask(viewModel: newViewModel)
         }).disposed(by: disposeBag)
 
         // Move cell.
@@ -126,14 +126,14 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                     cell.infoButton.isHidden = true
                     let newTask = viewModel.task.changeValue(title: newText)
                     let newViewModel = TaskTableViewCellViewModel(task: newTask)
-                    self.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.taskId)
+                    self.tasksViewModel.changeTitle(viewModel: newViewModel)
                 }).disposed(by: cell.disposeBag)
 
             cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
                 let oldTask = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId).task
                 let newViewModel = TaskTableViewCellViewModel(task: oldTask.changeValue(isChecked: !oldTask.isChecked))
-                owner.tasksViewModel.updateTask(viewModel: newViewModel, beforeId: viewModel.taskId)
+                owner.tasksViewModel.changeCheckMark(viewModel: newViewModel)
             }).disposed(by: cell.disposeBag)
 
             cell.infoButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
@@ -154,9 +154,9 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                 let oldViewModel = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId)
                 let isShowedSubTasks = !oldViewModel.isShowedSubTasks
                 if isShowedSubTasks {
-                    owner.tasksViewModel.openedSubTasks(newParentViewModel: oldViewModel)
+                    owner.tasksViewModel.openSubTasks(viewModel: oldViewModel)
                 } else {
-                    owner.tasksViewModel.closedSubTasks(newParentViewModel: oldViewModel)
+                    owner.tasksViewModel.closeSubTasks(viewModel: oldViewModel)
                 }
             }).disposed(by: cell.disposeBag)
             return cell
@@ -173,7 +173,7 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
         let viewModel = tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
 
         if viewModel.isShowedSubTasks {
-            tasksViewModel.closedSubTasks(newParentViewModel: viewModel)
+            tasksViewModel.closeSubTasks(viewModel: viewModel)
         }
 
         let dragItem = UIDragItem(itemProvider: NSItemProvider())

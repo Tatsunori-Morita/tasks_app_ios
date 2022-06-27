@@ -28,16 +28,29 @@ class BaseViewModel {
         _dataSource.addTaskCell()
     }
 
-    public func updateTask(viewModel: TaskTableViewCellViewModel, beforeId: String) {
-        _dataSource.updateTask(viewModel: viewModel, beforeId: beforeId)
+    public func changeTitle(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.changeTitle(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
+    public func changeCheckMark(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.changeCheckMark(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
+    public func removeTask(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.removeTask(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func moveTask(fromIndex: Int, toIndex: Int) {
         _dataSource.moveTask(fromIndex: fromIndex, toIndex: toIndex)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func insertTask(fromIndex: Int, toIndex: Int) {
         _dataSource.insertTask(fromIndex: fromIndex, toIndex: toIndex)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
     public func getTaskTableViewModel(id: String) -> TaskTableViewCellViewModel {
@@ -47,11 +60,13 @@ class BaseViewModel {
         return getTaskTableViewCellViewModel(index: index)
     }
 
-    public func openedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
-        _dataSource.openedSubTasks(newParentViewModel: newParentViewModel)
+    public func openSubTasks(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.openSubTasks(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
-    public func closedSubTasks(newParentViewModel: TaskTableViewCellViewModel) {
-        _dataSource.closedSubTasks(newParentViewModel: newParentViewModel)
+    public func closeSubTasks(viewModel: TaskTableViewCellViewModel) {
+        _dataSource.closeSubTasks(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 }
