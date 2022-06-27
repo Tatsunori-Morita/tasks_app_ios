@@ -107,7 +107,16 @@ final class DataSource {
 
         section.items[index] = viewModel
 
-        if viewModel.isChild && viewModel.title.isEmpty &&
+        if viewModel.title.isEmpty {
+            section = updateParentTask(viewModel: viewModel, oldSection: section)
+            section = removeSubTasks(viewModel: viewModel, oldSection: section)
+        }
+        saveBehaviorRelay(sectionViewModel: section)
+    }
+
+    private func updateParentTask(viewModel: TaskTableViewCellViewModel, oldSection: TaskTableViewSectionViewModel) -> TaskTableViewSectionViewModel {
+        var section = oldSection
+        if viewModel.isChild &&
             getOpenedSubTasks(parentId: viewModel.parentId).count == 1 {
             // If Parent task has not sub tasks, update task subtasks property of Parent.
             let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.parentId)
@@ -116,7 +125,20 @@ final class DataSource {
             let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
             section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
         }
-        saveBehaviorRelay(sectionViewModel: section)
+        return section
+    }
+
+    private func removeSubTasks(viewModel: TaskTableViewCellViewModel, oldSection: TaskTableViewSectionViewModel) -> TaskTableViewSectionViewModel {
+        var section = oldSection
+        if !viewModel.isChild && viewModel.isShowedSubTasks {
+            let subTasks = getOpenedSubTasks(parentId: viewModel.taskId)
+            subTasks.forEach { subTask in
+                if let subTaskIndex = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
+                    section.items.remove(at: subTaskIndex)
+                }
+            }
+        }
+        return section
     }
 
     public func removeTask(viewModel: TaskTableViewCellViewModel) {
@@ -132,6 +154,7 @@ final class DataSource {
                 }
             }
         }
+        section = updateParentTask(viewModel: viewModel, oldSection: section)
         saveBehaviorRelay(sectionViewModel: section)
     }
 

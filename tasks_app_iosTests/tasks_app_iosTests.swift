@@ -49,7 +49,7 @@ class tasks_app_iosTests: XCTestCase {
         }
     }
 
-    func testRemoveTask() throws {
+    func testRemoveParentTask() throws {
         let parentId = UUID().uuidString
         let parentTask = Task(id: parentId, title: "remove parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
         _dataSource.addTask(task: parentTask)
@@ -82,6 +82,32 @@ class tasks_app_iosTests: XCTestCase {
         }
 
         _dataSource.log()
+    }
+
+    func testRemoveAllSubTasks() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "remove parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "remove subTask1", notes: "", isChecked: false, parentId: parentId,subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "remove subTask2", notes: "", isChecked: false, parentId: parentId,subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let parentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        let subTask1ViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTask1.id)
+        let subTask2ViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTask2.id)
+
+        _dataSource.removeTask(viewModel: subTask1ViewModel)
+        _dataSource.removeTask(viewModel: subTask2ViewModel)
+
+        _dataSource.log()
+
+        let newParentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+
+        XCTAssertNotEqual(parentTaskViewModel.identity, newParentTaskViewModel.identity)
+        XCTAssertEqual(newParentTaskViewModel.isShowedSubTasks, false)
     }
 
     func testChangeTitle() throws {
