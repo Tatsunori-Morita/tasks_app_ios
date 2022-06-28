@@ -57,11 +57,10 @@ class TasksViewController: UIViewController {
         // Move cell.
         tableView.rx.itemMoved.asDriver().drive(with: self, onNext: { owner, values in
             let (fromIndexPath, toIndexPath) = values
-            if fromIndexPath == toIndexPath {
-                owner.tasksViewModel.insertTask(fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
-            } else {
-                owner.tasksViewModel.moveTask(fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
+            guard fromIndexPath.row != toIndexPath.row else {
+                return
             }
+            owner.tasksViewModel.moveTask(fromIndex: fromIndexPath.row, toIndex: toIndexPath.row)
         }).disposed(by: disposeBag)
 
         // Add new cell.
