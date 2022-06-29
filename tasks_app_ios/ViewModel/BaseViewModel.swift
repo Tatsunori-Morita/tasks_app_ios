@@ -28,8 +28,8 @@ class BaseViewModel {
         _dataSource.addTaskCell()
     }
 
-    public func changeTitle(viewModel: TaskTableViewCellViewModel) {
-        _dataSource.changeTitle(viewModel: viewModel)
+    public func changeTitle(viewModel: TaskTableViewCellViewModel, text: String) {
+        _dataSource.changeTitle(viewModel: viewModel, text: text)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
