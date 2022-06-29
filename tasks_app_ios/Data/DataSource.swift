@@ -145,15 +145,7 @@ final class DataSource {
         var section = getSectionViewModel()
         let index = getTaskIdOfSectionItems(taskId: viewModel.taskId)
         section.items.remove(at: index)
-
-        if !viewModel.isChild && viewModel.isShowedSubTasks {
-            let subTasks = getOpenedSubTasks(parentId: viewModel.taskId)
-            subTasks.forEach { subTask in
-                if let subTaskIndex = section.items.firstIndex(where: { $0.taskId == subTask.id }) {
-                    section.items.remove(at: subTaskIndex)
-                }
-            }
-        }
+        section = removeSubTasks(viewModel: viewModel, oldSection: section)
         section = updateParentTask(viewModel: viewModel, oldSection: section)
         saveBehaviorRelay(sectionViewModel: section)
     }
