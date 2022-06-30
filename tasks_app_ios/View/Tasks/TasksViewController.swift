@@ -19,6 +19,7 @@ class TasksViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let tasksViewModel = TasksViewModel()
     private var tableViewContentOffset: CGPoint?
+    private var selectedDragRowIndex = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -167,11 +168,26 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
         if viewModel.isShowedSubTasks {
             tasksViewModel.closeSubTasks(viewModel: viewModel)
         }
-
+        selectedDragRowIndex = indexPath.row
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {}
+
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+
+        guard let row = destinationIndexPath?.row, row < tasksViewModel.taskTableViewCellViewModelArray.count else {
+            return UITableViewDropProposal(operation: .cancel)
+        }
+
+        let fromViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: selectedDragRowIndex)
+        let toViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: row)
+
+        if fromViewModel.hasSubTasks && toViewModel.hasSubTasks || !toViewModel.parentId.isEmpty {
+            return UITableViewDropProposal(operation: .cancel)
+        }
+        return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
 }
