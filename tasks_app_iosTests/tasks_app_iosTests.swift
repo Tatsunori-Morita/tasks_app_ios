@@ -152,6 +152,48 @@ class tasks_app_iosTests: XCTestCase {
         XCTAssertEqual(_dataSource.taskTableViewCellViewModelArray.count, 0)
     }
 
+    func testSaveOpenedDetailValuesRemoveAllSubTasks() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "subTask1", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "subTask2", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let newParentTask = parentTask.changeValue(isShowedSubTasks: false, subTasks: [])
+        _dataSource.saveOpenedDetailValues(task: newParentTask)
+
+        _dataSource.log()
+
+        XCTAssertEqual(_dataSource.hasOpenedSubTasks(parentId: parentId), false)
+    }
+
+    func testSaveOpenedDetailValuesSameSubTasksNumber() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "subTask1", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "subTask2", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let newSubTasks: [Task] = [
+            Task(id: UUID().uuidString, title: "subTask3", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false),
+            Task(id: UUID().uuidString, title: "subTask4", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        ]
+
+        let newParentTask = parentTask.changeValue(isShowedSubTasks: false, subTasks: newSubTasks)
+        _dataSource.saveOpenedDetailValues(task: newParentTask)
+
+        _dataSource.log()
+        XCTAssertEqual(newSubTasks.count, newParentTask.subTasks.count)
+    }
+
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
         measure {

@@ -69,4 +69,9 @@ class BaseViewModel {
         _dataSource.closeSubTasks(viewModel: viewModel)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
+
+    public func saveOpenedDetailValues(task: Task) {
+        _dataSource.saveOpenedDetailValues(task: task)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
 }

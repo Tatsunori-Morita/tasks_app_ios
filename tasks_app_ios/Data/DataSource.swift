@@ -218,6 +218,50 @@ final class DataSource {
         saveBehaviorRelay(sectionViewModel: section)
     }
 
+    public func saveOpenedDetailValues(task: Task) {
+        let hasSubTasks = !task.subTasks.isEmpty
+        let viewModel = TaskTableViewCellViewModel(task: task, hasSubTasks: hasSubTasks)
+        var section = getSectionViewModel()
+        let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.taskId)
+        let subTaskViewModels = section.items.filter { $0.parentId == viewModel.taskId}
+
+        if viewModel.subTasks.count == 0 {
+            section.items[parentIndex] = viewModel
+            subTaskViewModels.forEach { subTaskViewModel in
+                if let subTaskIndex = section.items.firstIndex(where: { $0.taskId == subTaskViewModel.taskId }) {
+                    section.items.remove(at: subTaskIndex)
+                }
+            }
+            saveBehaviorRelay(sectionViewModel: section)
+            return
+        }
+
+        if subTaskViewModels.count == viewModel.subTasks.count {
+            print("equal.")
+            section.items[parentIndex] = viewModel
+            if var index = section.items.firstIndex(where: { $0.parentId == viewModel.taskId }) {
+                viewModel.subTasks.forEach { subTask in
+                    section.items[index] = TaskTableViewCellViewModel(task: subTask)
+                    index += 1
+                }
+            }
+            saveBehaviorRelay(sectionViewModel: section)
+            return
+        }
+
+        if subTaskViewModels.count < viewModel.subTasks.count {
+            print("increase.")
+            return
+        }
+
+        if subTaskViewModels.count > viewModel.subTasks.count{
+            print("decrease.")
+            return
+        }
+
+        fatalError("Not match the conditions.")
+    }
+
     public func moveTask(fromIndex: Int, toIndex: Int) {
         var section = getSectionViewModel()
         let fromViewModel = getTaskTableViewCellViewModel(index: fromIndex)
