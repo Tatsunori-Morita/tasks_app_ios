@@ -28,8 +28,8 @@ class BaseViewModel {
         _dataSource.addTaskCell()
     }
 
-    public func changeTitle(viewModel: TaskTableViewCellViewModel) {
-        _dataSource.changeTitle(viewModel: viewModel)
+    public func changeTitle(viewModel: TaskTableViewCellViewModel, text: String) {
+        _dataSource.changeTitle(viewModel: viewModel, text: text)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 
@@ -67,6 +67,11 @@ class BaseViewModel {
 
     public func closeSubTasks(viewModel: TaskTableViewCellViewModel) {
         _dataSource.closeSubTasks(viewModel: viewModel)
+        _dataSource.saveSectionViewModelIntoUserDefaults()
+    }
+
+    public func saveOpenedDetailValues(task: Task) {
+        _dataSource.saveOpenedDetailValues(task: task)
         _dataSource.saveSectionViewModelIntoUserDefaults()
     }
 }

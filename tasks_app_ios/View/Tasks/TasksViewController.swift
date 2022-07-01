@@ -19,6 +19,7 @@ class TasksViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let tasksViewModel = TasksViewModel()
     private var tableViewContentOffset: CGPoint?
+    private var selectedDragRowIndex = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,10 +103,8 @@ extension TasksViewController {
 extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     private func dataSource() -> RxTableViewSectionedAnimatedDataSource<TaskTableViewSectionViewModel> {
         return RxTableViewSectionedAnimatedDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none), configureCell: { [self] dataSource, tableView, indexPath, viewModel in
-            let hasSubTasks = tasksViewModel.hasOpenedSubTasks(parentId: viewModel.taskId)
-            let newTaskCellViewModel = viewModel.changeValues(hasSubTasks: hasSubTasks)
             let cell = tableView.dequeueReusableCell(withIdentifier: TaskTableViewCell.identifier, for: indexPath) as! TaskTableViewCell
-            cell.configure(viewModel: newTaskCellViewModel)
+            cell.configure(viewModel: viewModel)
 
             cell.textView.rx.didChange.asDriver().drive(with: self, onNext: { owner, _ in
                 tableView.beginUpdates()
@@ -123,16 +122,12 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
                 .map { $0! }
                 .subscribe(onNext: { newText in
                     cell.infoButton.isHidden = true
-                    let newTask = viewModel.task.changeValue(title: newText)
-                    let newViewModel = TaskTableViewCellViewModel(task: newTask)
-                    self.tasksViewModel.changeTitle(viewModel: newViewModel)
+                    self.tasksViewModel.changeTitle(viewModel: viewModel, text: newText)
                 }).disposed(by: cell.disposeBag)
 
             cell.tappedCheckMark.rx.event.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
-                let oldTask = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId).task
-                let newViewModel = TaskTableViewCellViewModel(task: oldTask.changeValue(isChecked: !oldTask.isChecked))
-                owner.tasksViewModel.changeCheckMark(viewModel: newViewModel)
+                owner.tasksViewModel.changeCheckMark(viewModel: viewModel)
             }).disposed(by: cell.disposeBag)
 
             cell.infoButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
@@ -150,12 +145,11 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
 
             cell.subTasksButton.rx.tap.asDriver().drive(with: self, onNext: { owner, _ in
                 IQKeyboardManager.shared.resignFirstResponder()
-                let oldViewModel = owner.tasksViewModel.getTaskTableViewModel(id: viewModel.taskId)
-                let isShowedSubTasks = !oldViewModel.isShowedSubTasks
+                let isShowedSubTasks = !viewModel.isShowedSubTasks
                 if isShowedSubTasks {
-                    owner.tasksViewModel.openSubTasks(viewModel: oldViewModel)
+                    owner.tasksViewModel.openSubTasks(viewModel: viewModel)
                 } else {
-                    owner.tasksViewModel.closeSubTasks(viewModel: oldViewModel)
+                    owner.tasksViewModel.closeSubTasks(viewModel: viewModel)
                 }
             }).disposed(by: cell.disposeBag)
             return cell
@@ -172,13 +166,47 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
         let viewModel = tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
 
         if viewModel.isShowedSubTasks {
+            // 親タスクで、サブタスクを展開している場合サブタスクを閉じる
             tasksViewModel.closeSubTasks(viewModel: viewModel)
         }
-
+        // drop制御するためにdragしたセルのインデックスを保持
+        selectedDragRowIndex = indexPath.row
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
         return [dragItem]
     }
 
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {}
+
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+
+        guard
+            let originRow = destinationIndexPath?.row,
+                originRow < tasksViewModel.taskTableViewCellViewModelArray.count
+        else {
+            // データ数以上のインデックスはキャンセル
+            return UITableViewDropProposal(operation: .cancel)
+        }
+
+        // dragした行のTaskデータを取得
+        let fromViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: selectedDragRowIndex)
+        // drag行のインデックス > drop行のインデックスの場合(dragして上に移動してdropした場合)
+        // destinationIndexPathはdrop行の下の行のインデックスが取得するので、
+        // 下から移動して来た場合は-1した行のTaskデータを取得
+        let toRow = (originRow == 0) ? 0 : (originRow < selectedDragRowIndex) ? originRow - 1 : originRow
+        let toViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: toRow)
+
+        if !fromViewModel.hasSubTasks {
+            // dragしたTaskにサブタスクがなければ、どこでもdrop可能
+            return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+        }
+
+        if toViewModel.hasSubTasks || !toViewModel.parentId.isEmpty {
+            // drop行の1つ上のTaskが以下条件の場合キャンセル
+            // 親タスクでサブタスクを持っている場合(hasSubTasks==true)
+            // サブタスク(parentId==blank)の場合
+            return UITableViewDropProposal(operation: .cancel)
+        }
+        return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
 }

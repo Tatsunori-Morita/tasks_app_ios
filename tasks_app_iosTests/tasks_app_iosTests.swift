@@ -35,12 +35,13 @@ class tasks_app_iosTests: XCTestCase {
         let subTask2 = Task(id: UUID().uuidString, title: "sub task2", notes: "", isChecked: isChecked, parentId: parentId)
         _dataSource.addTask(task: subTask2)
 
+        print("------------------ before values --------------------")
         _dataSource.log()
-        
-        let newParentTask = parentTask.changeValue(isChecked: !parentTask.isChecked)
-        let newParentTaskViewModel = TaskTableViewCellViewModel(task: newParentTask)
-        _dataSource.changeCheckMark(viewModel: newParentTaskViewModel)
 
+        let parentViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        _dataSource.changeCheckMark(viewModel: parentViewModel)
+
+        print("------------------ after values --------------------")
         _dataSource.log()
 
         let afterChangedSubTasks = _dataSource.getOpenedSubTasks(parentId: parentId)
@@ -119,34 +120,79 @@ class tasks_app_iosTests: XCTestCase {
         let subTask = Task(id: subTaskId, title: "sub task title", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
         _dataSource.addTask(task: subTask)
 
-        let oldParentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
-        let newTask = oldParentTaskViewModel.task.changeValue(title: "new parent task title")
-        let newParentTaskViewModel = TaskTableViewCellViewModel(task: newTask)
-        _dataSource.changeTitle(viewModel: newParentTaskViewModel)
+        let parentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        _dataSource.changeTitle(viewModel: parentTaskViewModel, text: "change parent title")
 
         print("-------- Change Parent task title -----------")
         _dataSource.log()
 
         let changedAfterParentViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
 
-        if changedAfterParentViewModel.title != newParentTaskViewModel.title {
+        if changedAfterParentViewModel.title == parentTaskViewModel.title {
             XCTFail("titleの変更が正しくおこなわれませんでした。")
         }
+    }
+
+    func testRemoveTitle() throws {
+        _dataSource.clearBehaviorRelay()
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent task title", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
+        _dataSource.addTask(task: parentTask)
+
+        let subTaskId = UUID().uuidString
+        let subTask = Task(id: subTaskId, title: "sub task title", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask)
 
         // remove sub task.
-        let oldSubTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: subTaskId)
-        let newSubTask = oldSubTaskViewModel.task.changeValue(title: "")
-        let newSubTaskViewModel = TaskTableViewCellViewModel(task: newSubTask)
-        _dataSource.changeTitle(viewModel: newSubTaskViewModel)
+        let parentTaskViewModel = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        _dataSource.changeTitle(viewModel: parentTaskViewModel, text: "")
 
         print("-------- Remove Sub task -----------")
         _dataSource.log()
 
-        let changedAfterParentViewModelNotHasSubTask = _dataSource.getTaskTableViewCellViewModel(taskId: parentId)
+        XCTAssertEqual(_dataSource.taskTableViewCellViewModelArray.count, 0)
+    }
 
-        if !changedAfterParentViewModelNotHasSubTask.subTasks.isEmpty || changedAfterParentViewModelNotHasSubTask.isShowedSubTasks {
-            XCTFail("Parent taskの値が正しくありません。")
-        }
+    func testSaveOpenedDetailValuesRemoveAllSubTasks() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "subTask1", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "subTask2", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let newParentTask = parentTask.changeValue(isShowedSubTasks: false, subTasks: [])
+        _dataSource.saveOpenedDetailValues(task: newParentTask)
+
+        _dataSource.log()
+
+        XCTAssertEqual(_dataSource.hasOpenedSubTasks(parentId: parentId), false)
+    }
+
+    func testSaveOpenedDetailValuesSameSubTasksNumber() throws {
+        let parentId = UUID().uuidString
+        let parentTask = Task(id: parentId, title: "parent", notes: "", isChecked: false, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: parentTask)
+
+        let subTask1 = Task(id: UUID().uuidString, title: "subTask1", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask1)
+
+        let subTask2 = Task(id: UUID().uuidString, title: "subTask2", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        _dataSource.addTask(task: subTask2)
+
+        let newSubTasks: [Task] = [
+            Task(id: UUID().uuidString, title: "subTask3", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false),
+            Task(id: UUID().uuidString, title: "subTask4", notes: "", isChecked: false, parentId: parentId, subTasks: [], isShowedSubTask: false)
+        ]
+
+        let newParentTask = parentTask.changeValue(isShowedSubTasks: false, subTasks: newSubTasks)
+        _dataSource.saveOpenedDetailValues(task: newParentTask)
+
+        _dataSource.log()
+        XCTAssertEqual(newSubTasks.count, newParentTask.subTasks.count)
     }
 
     func testPerformanceExample() throws {
