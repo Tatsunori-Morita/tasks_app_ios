@@ -166,8 +166,10 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
         let viewModel = tasksViewModel.getTaskTableViewCellViewModel(index: indexPath.row)
 
         if viewModel.isShowedSubTasks {
+            // 親タスクで、サブタスクを展開している場合サブタスクを閉じる
             tasksViewModel.closeSubTasks(viewModel: viewModel)
         }
+        // drop制御するためにdragしたセルのインデックスを保持
         selectedDragRowIndex = indexPath.row
         let dragItem = UIDragItem(itemProvider: NSItemProvider())
         dragItem.localObject = tasksViewModel.taskTableViewCellViewModelArray[indexPath.row]
@@ -178,14 +180,31 @@ extension TasksViewController: UITableViewDropDelegate, UITableViewDragDelegate 
 
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
 
-        guard let row = destinationIndexPath?.row, row < tasksViewModel.taskTableViewCellViewModelArray.count else {
+        guard
+            let originRow = destinationIndexPath?.row,
+                originRow < tasksViewModel.taskTableViewCellViewModelArray.count
+        else {
+            // データ数以上のインデックスはキャンセル
             return UITableViewDropProposal(operation: .cancel)
         }
 
+        // dragした行のTaskデータを取得
         let fromViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: selectedDragRowIndex)
-        let toViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: row)
+        // drag行のインデックス > drop行のインデックスの場合(dragして上に移動してdropした場合)
+        // destinationIndexPathはdrop行の下の行のインデックスが取得するので、
+        // 下から移動して来た場合は-1した行のTaskデータを取得
+        let toRow = (originRow == 0) ? 0 : (originRow < selectedDragRowIndex) ? originRow - 1 : originRow
+        let toViewModel = tasksViewModel.getTaskTableViewCellViewModel(index: toRow)
 
-        if fromViewModel.hasSubTasks && toViewModel.hasSubTasks || !toViewModel.parentId.isEmpty {
+        if !fromViewModel.hasSubTasks {
+            // dragしたTaskにサブタスクがなければ、どこでもdrop可能
+            return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+        }
+
+        if toViewModel.hasSubTasks || !toViewModel.parentId.isEmpty {
+            // drop行の1つ上のTaskが以下条件の場合キャンセル
+            // 親タスクでサブタスクを持っている場合(hasSubTasks==true)
+            // サブタスク(parentId==blank)の場合
             return UITableViewDropProposal(operation: .cancel)
         }
         return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
