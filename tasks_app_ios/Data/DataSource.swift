@@ -131,8 +131,7 @@ final class DataSource {
             let oldParentViewModel = section.items[parentIndex]
             let oldParentTask = oldParentViewModel.task
             let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: [])
-            section.items[parentIndex] = TaskTableViewCellViewModel(
-                task: newParentTask, hasSubTasks: false)
+            section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
         }
         return section
     }
@@ -164,8 +163,7 @@ final class DataSource {
     public func changeCheckMark(viewModel: TaskTableViewCellViewModel) {
         let oldTask = viewModel.task
         let newViewModel = TaskTableViewCellViewModel(
-            task: oldTask.changeValue(isChecked: !oldTask.isChecked),
-            hasSubTasks: viewModel.hasSubTasks)
+            task: oldTask.changeValue(isChecked: !oldTask.isChecked))
 
         var section = getSectionViewModel()
         let index = getTaskIdOfSectionItems(taskId: newViewModel.taskId)
@@ -188,7 +186,7 @@ final class DataSource {
         let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.taskId)
         let oldParentTask = section.items[parentIndex].task
         let newParentViewModel = TaskTableViewCellViewModel(
-            task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []), hasSubTasks: true)
+            task: oldParentTask.changeValue(isShowedSubTasks: true, subTasks: []))
         section.items[parentIndex] = newParentViewModel
 
         let subTaskViewModels = oldParentTask.subTasks.map { subTask in
@@ -214,13 +212,12 @@ final class DataSource {
 
         let oldParentTask = viewModel.task
         let newParentTask = oldParentTask.changeValue(isShowedSubTasks: false, subTasks: subTasks)
-        section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask, hasSubTasks: true)
+        section.items[parentIndex] = TaskTableViewCellViewModel(task: newParentTask)
         saveBehaviorRelay(sectionViewModel: section)
     }
 
     public func saveOpenedDetailValues(task: Task) {
-        let hasSubTasks = !task.subTasks.isEmpty
-        let viewModel = TaskTableViewCellViewModel(task: task, hasSubTasks: hasSubTasks)
+        let viewModel = TaskTableViewCellViewModel(task: task)
         var section = getSectionViewModel()
         let parentIndex = getTaskIdOfSectionItems(taskId: viewModel.taskId)
         let subTaskViewModels = section.items.filter { $0.parentId == viewModel.taskId}
@@ -281,8 +278,7 @@ final class DataSource {
             newTask = oldTask.changeValue(parentId: parentId)
         }
 
-        section.items[toIndex] = TaskTableViewCellViewModel(
-            task: newTask, hasSubTasks: hasSubTasks(viewModel: fromViewModel))
+        section.items[toIndex] = TaskTableViewCellViewModel(task: newTask)
         let newSection = TaskTableViewSectionViewModel(header: "", items: section.items)
         saveBehaviorRelay(sectionViewModel: newSection)
     }
@@ -305,13 +301,13 @@ final class DataSource {
 
         if toViewModel.isShowedSubTasks {
             newFromTask = oldFromTask.changeValue(parentId: toViewModel.taskId)
-            section.items.insert(TaskTableViewCellViewModel(task: newFromTask, hasSubTasks: hasSubTasks(viewModel: fromViewModel)), at: toIndex + 1)
+            section.items.insert(TaskTableViewCellViewModel(task: newFromTask), at: toIndex + 1)
         } else {
             newFromTask = oldFromTask.changeValue(parentId: toViewModel.taskId)
             var oldSubTasks = toViewModel.subTasks
             oldSubTasks.append(newFromTask)
             newToTask = oldToTask.changeValue(isShowedSubTasks: false, subTasks: oldSubTasks)
-            section.items[toIndex] = TaskTableViewCellViewModel(task: newToTask, hasSubTasks: hasSubTasks(viewModel: fromViewModel))
+            section.items[toIndex] = TaskTableViewCellViewModel(task: newToTask)
         }
         let newSection = TaskTableViewSectionViewModel(header: "", items: section.items)
         saveBehaviorRelay(sectionViewModel: newSection)

@@ -134,6 +134,7 @@ class tasks_app_iosTests: XCTestCase {
     }
 
     func testRemoveTitle() throws {
+        _dataSource.clearBehaviorRelay()
         let parentId = UUID().uuidString
         let parentTask = Task(id: parentId, title: "parent task title", notes: "", isChecked: false, subTasks: [], isShowedSubTask: true)
         _dataSource.addTask(task: parentTask)
